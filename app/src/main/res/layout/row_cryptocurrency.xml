@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/fullName"
+            android:text="Bitcoin (BTC)"
+            android:layout_weight="1"
+            android:background="#dcdcdc"
+            android:gravity="center"
+            android:padding="20dp"/>
+
+        <TextView
+            android:id="@+id/value"
+            android:text="39.790,19 ₺"
+            android:layout_weight="1"
+            android:background="#d3d3d3"
+            android:textColor="#000000"
+            android:padding="20dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/volume"
+            android:text="5.156.272.337"
+            android:layout_weight="1"
+            android:background="#d3d3d3"
+            android:textColor="#000000"
+            android:padding="20dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/changeRate"
+            android:text="%1.65"
+            android:layout_weight="1"
+            android:background="#d3d3d3"
+            android:textColor="@color/red"
+            android:padding="20dp"
+            android:gravity="center"/>
+    </TableRow>
+</RelativeLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="name_text_size">72sp</dimen>
+    <dimen name="name_text_size_small">52sp</dimen>
+    <dimen name="value_text_size">78sp</dimen>
+    <dimen name="change_rate_text_size">42sp</dimen>
+
+    <dimen name="gold_name_text_size">48sp</dimen>
+    <dimen name="gold_value_text_size">66sp</dimen>
+    <dimen name="gold_change_rate_text_size">44sp</dimen>
+
+    <dimen name="seans_name_text_size">16sp</dimen>
+    <dimen name="borsa_value_text_size">52sp</dimen>
+
+    <dimen name="doviz_detay_name_text_size">62sp</dimen>
+    <dimen name="dovız_detay_button_text_size">30sp</dimen>
+    <dimen name="dovız_detay_button_left_margin">20dp</dimen>
+</resources>

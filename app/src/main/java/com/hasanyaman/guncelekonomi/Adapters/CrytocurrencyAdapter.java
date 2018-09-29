@@ -1,0 +1,82 @@
+package com.hasanyaman.guncelekonomi.Adapters;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.hasanyaman.guncelekonomi.Data.Cryptocurrency;
+import com.hasanyaman.guncelekonomi.R;
+
+import java.util.ArrayList;
+
+public class CrytocurrencyAdapter extends BaseAdapter {
+    private Context context;
+    private ArrayList<Cryptocurrency> cryptocurrencies;
+
+    public CrytocurrencyAdapter(Context context, ArrayList<Cryptocurrency> cryptocurrencies) {
+        this.context = context;
+        this.cryptocurrencies = cryptocurrencies;
+
+    }
+
+    @Override
+    public int getCount() {
+        return cryptocurrencies.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return cryptocurrencies.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.row_cryptocurrency, parent, false);
+            holder = new ViewHolder();
+
+            holder.fullNameTextView = convertView.findViewById(R.id.fullName);
+            holder.valueTextView = convertView.findViewById(R.id.value);
+            holder.volumeTextView = convertView.findViewById(R.id.volume);
+            holder.changeRateTextView = convertView.findViewById(R.id.changeRate);
+
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        holder.fullNameTextView.setText(cryptocurrencies.get(position).getFullName());
+        String value = cryptocurrencies.get(position).getValue_try() + " ₺";
+        holder.valueTextView.setText(value);
+        holder.volumeTextView.setText(String.valueOf(cryptocurrencies.get(position).getVolume()));
+        String changeRate = "%" + String.valueOf(cryptocurrencies.get(position).getChangeRate());
+        holder.changeRateTextView.setText(changeRate);
+
+        if(cryptocurrencies.get(position).getChangeRate() > 0) {
+            holder.changeRateTextView.setTextColor(context.getResources().getColor(R.color.green));
+        } else {
+            holder.changeRateTextView.setTextColor(context.getResources().getColor(R.color.red));
+
+        }
+
+        return convertView;
+    }
+
+    static class ViewHolder {
+        TextView fullNameTextView;
+        TextView valueTextView;
+        TextView volumeTextView;
+        TextView changeRateTextView;
+    }
+}

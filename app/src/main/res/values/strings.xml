@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Güncel Ekonomi</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Ayarlar</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="default_value">0.0</string>
+    <string name="default_change_rate">0.0%</string>
+
+    <string name="gramAltin">Gram Altın</string>
+    <string name="ceyrekAltin">Çeyrek Altın</string>
+    <string name="yarimAltin">Yarım Altın</string>
+    <string name="tamAltin">Tam Altın</string>
+    <string name="cumhuriyetAltin">Cumhuriyet Altını</string>
+    <string name="ons">Ons</string>
+
+    <string name="seans1min">1. Seans En Düşük:</string>
+    <string name="seans1max">1. Seans En Yüksek:</string>
+    <string name="seans1kapanis">1. Seans Kapanış:</string>
+
+    <string name="seans2min">2. Seans En Düşük:</string>
+    <string name="seans2max">2. Seans En Yüksek:</string>
+    <string name="seans2kapanis">2. Seans Kapanış:</string>
+
+    <string name="last_kapanis">Önceki Kapanış:</string>
+
+    <string name="daily_button_text">Günlük</string>
+    <string name="weekly_button_text">Haftalık</string>
+    <string name="monthly_button_text">Aylık</string>
+    <string name="yearly_button_text">Yıllık</string>
+
+    <string name="iletisim_text">İletişim için: hasannyaman@gmail.com</string>
+
+
+</resources>

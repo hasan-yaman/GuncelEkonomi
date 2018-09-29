@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="Çeyrek Altın"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        />
+
+    <TextView
+        android:id="@+id/value"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_alignTop="@+id/name"
+        android:text="373.8"/>
+
+    <ImageView
+        android:id="@+id/imgArrow"
+        android:src="@drawable/up"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_alignTop="@+id/value"/>
+
+    <TextView
+        android:id="@+id/changeRate"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@+id/value"
+        android:layout_alignLeft="@+id/imgArrow"
+        android:layout_alignStart="@+id/imgArrow"
+        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"
+        android:text="-2.587"/>
+
+</RelativeLayout>

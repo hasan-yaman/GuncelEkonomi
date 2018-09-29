@@ -1,0 +1,148 @@
+package com.hasanyaman.guncelekonomi;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener,
+        StockMarketFragment.OnFragmentInteractionListener,
+        SettingsFragment.OnFragmentInteractionListener, CurrencyFragment.OnFragmentInteractionListener,
+        CryptocurrencyFragment.OnFragmentInteractionListener {
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        getSupportActionBar().setTitle("Güncel Ekonomi");
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Uygulama açıldığında döviz menüsünü göster!
+        Fragment fragment = new CurrencyFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("type", "currency");
+        fragment.setArguments(bundle);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        Fragment fragment = null;
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            fragment = new SettingsFragment();
+            setTitle("Ayarlar");
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        Fragment fragment = null;
+        Bundle bundle = new Bundle();
+
+        if (id == R.id.nav_altin) {
+            fragment = new CurrencyFragment();
+            // TODO burayı newInstance ile çöz
+            bundle.putString("type", "gold");
+            setTitle("Altın");
+        } else if (id == R.id.nav_borsa) {
+            fragment = new StockMarketFragment();
+            setTitle("Borsa");
+        } else if (id == R.id.nav_doviz) {
+            fragment = new CurrencyFragment();
+            bundle.putString("type", "currency");
+            setTitle("Döviz");
+        } else if (id == R.id.nav_cryptocurrency) {
+            fragment = new CryptocurrencyFragment();
+        }
+
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragment.setArguments(bundle);
+
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
+    }
+
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    // Cihazın internet bağlantısını kontrol eder!
+    public boolean isOnline() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+}
+
+

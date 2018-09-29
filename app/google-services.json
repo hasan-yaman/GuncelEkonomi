@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "984541754935",
+    "firebase_url": "https://guncel-ekonomi.firebaseio.com",
+    "project_id": "guncel-ekonomi",
+    "storage_bucket": "guncel-ekonomi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984541754935:android:098e4499a331623c",
+        "android_client_info": {
+          "package_name": "com.hasanyaman.guncelekonomi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984541754935-v1bgtt13nna8cgsclaup5lti4l8ienrl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hasanyaman.guncelekonomi",
+            "certificate_hash": "c60b0b6eb360ba5ec33c923d1d648a53ecaf883f"
+          }
+        },
+        {
+          "client_id": "984541754935-kurtru1d2914rnui0p9n5p2ph5ecav01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoSnh6TrhCfbG35VUs-vYlxdnRIFdh6R8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "984541754935-kurtru1d2914rnui0p9n5p2ph5ecav01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
