@@ -1,26 +1,37 @@
 package com.hasanyaman.guncelekonomi;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 
-import com.hasanyaman.guncelekonomi.Adapters.CrytocurrencyAdapter;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.hasanyaman.guncelekonomi.Adapters.CryptocurrencyAdapter;
 import com.hasanyaman.guncelekonomi.Data.Cryptocurrency;
+import com.hasanyaman.guncelekonomi.Data.Currency;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,20 +48,21 @@ import java.util.Comparator;
  * create an instance of this fragment.
  */
 public class CryptocurrencyFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
     ListView listView;
     ProgressBar progressBar;
     ArrayList<Cryptocurrency> cryptocurrencies = new ArrayList<>();
+
+    TableRow headerRow;
+    View topDivider;
+    TextView errorTextView;
+
+    boolean isOnline;
+
+    SharedPreferences sharedPreferences;
 
     public CryptocurrencyFragment() {
         // Required empty public constructor
@@ -60,16 +72,12 @@ public class CryptocurrencyFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment CryptocurrencyFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static CryptocurrencyFragment newInstance(String param1, String param2) {
+    public static CryptocurrencyFragment newInstance() {
         CryptocurrencyFragment fragment = new CryptocurrencyFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,10 +85,7 @@ public class CryptocurrencyFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
@@ -90,14 +95,87 @@ public class CryptocurrencyFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_cryptocurrency, container, false);
         listView = inflatedView.findViewById(R.id.listView);
         progressBar = inflatedView.findViewById(R.id.progress_bar);
+        headerRow = inflatedView.findViewById(R.id.headerRow);
+        topDivider = inflatedView.findViewById(R.id.topDivider);
+        errorTextView = inflatedView.findViewById(R.id.errorMessage);
 
-        String url = "https://www.doviz.com/api/v1/coins/all/latest";
-        new DownloadTask().execute(url);
+
+        sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
+        isOnline = checkConnection();
+
+        if (isOnline) {
+            // Son kaydedilen dataların üzerinden 5 dakikadan fazla zaman geçmişse
+            // yeniden çek
+            // çekmemişse eski dataları göster
+            // Eğer eski datalar boşsa (yoksa) -> yeniden çek
+
+            long lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_CRYPTOCURRENCY, 0);
+
+            long currentTime = System.currentTimeMillis();
+
+            boolean isExpired = currentTime - lastUpdateTime > Constants.EXPIRE_TIME;
+
+
+            if (isExpired) {
+                Log.i("Info", "is expired");
+
+                getDataFromAPI();
+
+            } else {
+                Log.i("Info", "is not expired");
+
+                // Bu durumda eski dataya bak.
+
+                Gson gson = new Gson();
+                String response = sharedPreferences.getString(Constants.CRYPTOCURRENCY_LIST, "");
+
+                if (response.equals("")) {
+                    Log.i("Info", "new data");
+                    getDataFromAPI();
+                } else {
+                    Log.i("Info", "old data");
+                    Type type = new TypeToken<ArrayList<Cryptocurrency>>() {
+                    }.getType();
+                    cryptocurrencies = gson.fromJson(response, type);
+                    updateUI();
+                }
+            }
+
+        } else {
+            // Kullanıcıyı uyar ve eski dataları göster.
+            // Eğer eski datalar boşsa (yoksa) -> uyar
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Lütfen internet bağlantınızı kontrol edin")
+                    .setPositiveButton("Tamam", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    })
+                    .create()
+                    .show();
+
+            Gson gson = new Gson();
+            String response = sharedPreferences.getString(Constants.CRYPTOCURRENCY_LIST, "");
+
+
+            if (response.equals("")) {
+                Log.i("Info", "new data");
+                showAnErrorMessage();
+            } else {
+                Log.i("Info", "old data");
+                Type type = new TypeToken<ArrayList<Cryptocurrency>>() {
+                }.getType();
+                cryptocurrencies = gson.fromJson(response, type);
+                updateUI();
+            }
+
+        }
+
 
         return inflatedView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -132,7 +210,6 @@ public class CryptocurrencyFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -155,7 +232,7 @@ public class CryptocurrencyFragment extends Fragment {
                 }
                 return result;
             } catch (Exception e) {
-                Log.i("Info","Hata!2" + e.toString());
+                Log.i("Info", "Hata!2" + e.toString());
             }
             return "FAIL";
         }
@@ -165,10 +242,10 @@ public class CryptocurrencyFragment extends Fragment {
             super.onPostExecute(s);
             try {
                 JSONArray jsonArray = new JSONArray(s);
-                for(int i = 0; i<jsonArray.length(); i++) {
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject object = jsonArray.getJSONObject(i);
-                    cryptocurrencies.add(new Cryptocurrency(object.getString("full_name"),object.getString("symbol"),object.getString("selling_try"),
-                            object.getDouble("change_rate"),object.getDouble("volume"),object.getInt("rank")));
+                    cryptocurrencies.add(new Cryptocurrency(object.getString("full_name"), object.getString("symbol"), object.getString("selling_try"),
+                            object.getDouble("change_rate"), object.getLong("volume"), object.getInt("rank")));
                 }
 
                 Collections.sort(cryptocurrencies, new Comparator<Cryptocurrency>() {
@@ -180,16 +257,48 @@ public class CryptocurrencyFragment extends Fragment {
 
                 updateUI();
 
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                // Çektiğin verileri kaydet!
+
+                Gson gson = new Gson();
+                String jsonArrayList = gson.toJson(cryptocurrencies);
+
+                editor.putLong(Constants.LAST_UPDATE_TIME_CRYPTOCURRENCY, System.currentTimeMillis());
+                editor.putString(Constants.CRYPTOCURRENCY_LIST, jsonArrayList);
+
+                editor.apply();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
+    private void getDataFromAPI() {
+        String url = "https://www.doviz.com/api/v1/coins/all/latest";
+        new DownloadTask().execute(url);
+    }
+
     private void updateUI() {
-        CrytocurrencyAdapter adapter = new CrytocurrencyAdapter(getActivity(), cryptocurrencies);
+        CryptocurrencyAdapter adapter = new CryptocurrencyAdapter(getActivity(), cryptocurrencies);
         listView.setAdapter(adapter);
+
         progressBar.setVisibility(View.GONE);
+        listView.setVisibility(View.VISIBLE);
+        headerRow.setVisibility(View.VISIBLE);
+        topDivider.setVisibility(View.VISIBLE);
+    }
+
+    public boolean checkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    private void showAnErrorMessage() {
+        progressBar.setVisibility(View.GONE);
+        errorTextView.setVisibility(View.VISIBLE);
     }
 
 

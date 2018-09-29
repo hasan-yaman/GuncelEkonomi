@@ -4,11 +4,88 @@
              android:layout_height="match_parent"
              tools:context="com.hasanyaman.guncelekonomi.StockMarketFragment">
 
+    <TableRow
+        android:id="@+id/headerRow"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/rowName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Borsa"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="0.75">
+
+            <TextView
+                android:id="@+id/rowValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="Endeks"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/changeRate"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="Fark"/>
+
+
+        </RelativeLayout>
+
+    </TableRow>
+
+    <View
+        android:id="@+id/topDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/red"
+        android:layout_marginTop="50dp"
+        android:visibility="invisible"/>
+
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:visibility="invisible">
     </ListView>
+
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:text="@string/error_message"
+        android:textColor="@color/red"
+        android:textSize="18sp"/>
 
     <ProgressBar
         android:id="@+id/progress_bar"

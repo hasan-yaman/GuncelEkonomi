@@ -2,7 +2,6 @@ package com.hasanyaman.guncelekonomi;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -10,17 +9,18 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TableRow;
+import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hasanyaman.guncelekonomi.Adapters.CurrencyAdapter;
 import com.hasanyaman.guncelekonomi.Data.Currency;
 
@@ -29,11 +29,11 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+
 
 
 /**
@@ -45,16 +45,24 @@ import java.util.Date;
  * create an instance of this fragment.
  */
 public class CurrencyFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_TYPE = "type";
+
+    private String type;
 
     private OnFragmentInteractionListener mListener;
+
+    ArrayList<Currency> currencies = new ArrayList<>();
+    ProgressBar progressBar;
+    ListView listView;
+    TableRow headerRow;
+    TextView rowName;
+    View topDivider;
+    TextView errorTextView;
+
+    boolean isOnline;
+
+    SharedPreferences sharedPreferences;
 
     public CurrencyFragment() {
         // Required empty public constructor
@@ -64,66 +72,24 @@ public class CurrencyFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param type type of data(either gold or currency).
      * @return A new instance of fragment CurrencyFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static CurrencyFragment newInstance(String param1, String param2) {
+    public static CurrencyFragment newInstance(String type) {
         CurrencyFragment fragment = new CurrencyFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_TYPE, type);
         fragment.setArguments(args);
         return fragment;
     }
-    String type = "";
-    ArrayList<Currency> currencies = new ArrayList<>();
 
-
-    ProgressBar progressBar;
-
-    ListView listView;
-
-    boolean haveInternet = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            type = getArguments().getString(ARG_TYPE);
         }
-        Bundle bundle = this.getArguments();
-        if(bundle != null) {
-            type = bundle.getString("type");
-        }
-
-        if(!isOnline()) {
-            haveInternet = false;
-            // cihazın internet bağlantısı yok!
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("com.hasanyaman.guncelekonomi",Context.MODE_PRIVATE);
-            String lastUpdateTime = sharedPreferences.getString("lastUpdateTime",""); // ikinci argument default value
-
-            String message = "İnternet bağlantınız yok!";
-
-            if(!lastUpdateTime.equals("")) {
-                // son güncelleme zamanı bilgisi elimizde varsa.
-                message += "Son güncelleme zamanı: " + lastUpdateTime;
-            }
-
-            new AlertDialog.Builder(getContext())
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setMessage(message)
-                    .setPositiveButton("Tamam", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    })
-                    .show();
-        }
-
     }
 
     @Override
@@ -131,79 +97,107 @@ public class CurrencyFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View inlatedView = inflater.inflate(R.layout.fragment_currency, container, false);
+        View inflatedView = inflater.inflate(R.layout.fragment_currency, container, false);
 
-        listView = inlatedView.findViewById(R.id.listView);
-        progressBar = inlatedView.findViewById(R.id.progress_bar);
+        listView = inflatedView.findViewById(R.id.listView);
+        progressBar = inflatedView.findViewById(R.id.progress_bar);
+        headerRow = inflatedView.findViewById(R.id.headerRow);
+        topDivider = inflatedView.findViewById(R.id.topDivider);
+        rowName = inflatedView.findViewById(R.id.rowName);
+        errorTextView = inflatedView.findViewById(R.id.errorMessage);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity(),GraphActivity.class);
-                startActivity(intent);
-            }
-        });
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("com.hasanyaman.guncelekonomi",Context.MODE_PRIVATE);
+        sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
+        isOnline = checkConnection();
 
-        if(haveInternet) {
-            // cihazın interneti varsa, bilgileri almaya başlayabilirsin.
+        if (isOnline) {
+            // Son kaydedilen dataların üzerinden 5 dakikadan fazla zaman geçmişse
+            // yeniden çek
+            // çekmemişse eski dataları göster
+            // Eğer eski datalar boşsa (yoksa) -> yeniden çek
 
-            CurrencyFragment.DownloadTask downloadTask = new CurrencyFragment.DownloadTask();
-            String url = "";
-
-            if(type.equals("gold")) {
-                url = "https://www.doviz.com/api/v1/golds/all/latest";
+            long lastUpdateTime = 0;
+            if(type.equals(Constants.GOLD)) {
+               lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_GOLD, 0);
             } else {
-                url = "https://www.doviz.com/api/v1/currencies/all/latest";
+                lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_CURRENCY, 0);
             }
 
-            downloadTask.execute(url);
+            long currentTime = System.currentTimeMillis();
+
+            boolean isExpired = currentTime - lastUpdateTime > Constants.EXPIRE_TIME;
+
+            Log.i("Info","last update time " + lastUpdateTime);
+            Log.i("Info","current time " + currentTime);
+            Log.i("Info","difference " + (currentTime - lastUpdateTime));
+
+
+            if(isExpired) {
+                Log.i("Info","is expired");
+
+                getDataFromAPI();
+
+            } else {
+                Log.i("Info","is not expired");
+
+                // Bu durumda eski dataya bak.
+
+                Gson gson = new Gson();
+                String response = "";
+                if(type.equals(Constants.GOLD)) {
+                    response = sharedPreferences.getString(Constants.GOLD_LIST,"");
+                } else {
+                    response = sharedPreferences.getString(Constants.CURRENCY_LIST,"");
+                }
+
+                if(response.equals("")) {
+                    Log.i("Info","new data");
+                    getDataFromAPI();
+                } else {
+                    Log.i("Info","old data");
+                    Type type = new TypeToken<ArrayList<Currency>>(){}.getType();
+                    currencies = gson.fromJson(response,type);
+                    updateUI();
+                }
+            }
+
         } else {
-            // cihazın interneti yoksa, en son kaydettiklerini göster.
+            // Kullanıcıyı uyar ve eski dataları göster.
+            // Eğer eski datalar boşsa (yoksa) -> uyar
 
-            ArrayList<String> last_names = new ArrayList<>();
-            ArrayList<String> last_values = new ArrayList<>();
-            ArrayList<String> last_changeRates = new ArrayList<>();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Lütfen internet bağlantınızı kontrol edin")
+                    .setPositiveButton("Tamam", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    })
+                    .create()
+                    .show();
 
-            // TODO getStringde direkt olarak type kullanılabilir, kod daha kısa olur
-
-            /*if(type.equals("gold")) {
-                try {
-                    last_names = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("gold-names",ObjectSerializer.serialize(new ArrayList<String>())));
-                    last_values = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("gold-values",ObjectSerializer.serialize(new ArrayList<String>())));
-                    last_changeRates = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("gold-changeRates",ObjectSerializer.serialize(new ArrayList<String>())));
-                } catch(Exception e) {
-                    Log.i("Info","Shared preferences! " + e.toString());
-                }
+            Gson gson = new Gson();
+            String response = "";
+            if(type.equals(Constants.GOLD)) {
+                response = sharedPreferences.getString(Constants.GOLD_LIST,"");
             } else {
-                try {
-                    last_names = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("currency-names",ObjectSerializer.serialize(new ArrayList<String>())));
-                    last_values = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("currency-values",ObjectSerializer.serialize(new ArrayList<String>())));
-                    last_changeRates = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("currency-changeRates",ObjectSerializer.serialize(new ArrayList<String>())));
-                } catch(Exception e) {
-                    Log.i("Info","Shared preferences! " + e.toString());
-                }
+                response = sharedPreferences.getString(Constants.CURRENCY_LIST,"");
             }
 
-           if(last_names.size() != 0) {
-               names = last_names;
-               values = last_values;
-               changeRates = last_changeRates;
-               updateLayouts();
-           } else {
-               // bu durumda daha önce hiç bilgiler alınmamış, şu andada internet bağlantısı yok!
-               // yani kullanıcıya gösterilecek herhangi bir şey yok!
-           } */
+            if(response.equals("")) {
+                Log.i("Info","new data");
+                showAnErrorMessage();
+            } else {
+                Log.i("Info","old data");
+                Type type = new TypeToken<ArrayList<Currency>>(){}.getType();
+                currencies = gson.fromJson(response,type);
+                updateUI();
+            }
 
         }
 
-
-
-        return inlatedView;
+        return inflatedView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -281,8 +275,8 @@ public class CurrencyFragment extends Fragment {
                 //JSONObject jsonObject = new JSONObject(s);
                 JSONArray jsonArray = new JSONArray(s);
 
-                Log.i("Info","jsonArray -> " + jsonArray);
-                for(int i = 0; i<jsonArray.length(); i++) {
+                Log.i("Info", "jsonArray -> " + jsonArray);
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject object = jsonArray.getJSONObject(i);
                     //Log.i("Info","goldObject -> " + goldObject);
                     String name = object.getString("full_name");
@@ -293,26 +287,24 @@ public class CurrencyFragment extends Fragment {
 
                 updateUI();
 
-                progressBar.setVisibility(View.INVISIBLE);
-
                 // Son güncelleme zamanını kaydet!
-                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("com.hasanyaman.guncelekonomi",Context.MODE_PRIVATE);
-                Date currentTime = Calendar.getInstance().getTime();
-                String lastUpdateTime = currentTime.getHours() + ":" + currentTime.getMinutes();
-                sharedPreferences.edit().putString("lastUpdateTime",lastUpdateTime).apply();
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // Çektiğin verileri kaydet!
 
-                /*if(type.equals("gold")) {
-                    sharedPreferences.edit().putString("gold-names",ObjectSerializer.serialize(names)).apply();
-                    sharedPreferences.edit().putString("gold-values",ObjectSerializer.serialize(values)).apply();
-                    sharedPreferences.edit().putString("gold-changeRates",ObjectSerializer.serialize(changeRates)).apply();
-                } else {
-                    sharedPreferences.edit().putString("currency-names",ObjectSerializer.serialize(names)).apply();
-                    sharedPreferences.edit().putString("currency-values",ObjectSerializer.serialize(values)).apply();
-                    sharedPreferences.edit().putString("currency-changeRates",ObjectSerializer.serialize(changeRates)).apply();
-                } */
+                Gson gson = new Gson();
+                String jsonArrayList = gson.toJson(currencies);
 
+                if (type.equals(Constants.GOLD)) {
+                    editor.putLong(Constants.LAST_UPDATE_TIME_GOLD, System.currentTimeMillis());
+                    editor.putString(Constants.GOLD_LIST, jsonArrayList);
+                } else {
+                    editor.putLong(Constants.LAST_UPDATE_TIME_CURRENCY, System.currentTimeMillis());
+                    editor.putString(Constants.CURRENCY_LIST, jsonArrayList);
+                }
+
+                editor.apply();
 
             } catch (Exception e) {
                 Log.i("Info", "Hata!PostExecute!" + e.toString());
@@ -321,17 +313,45 @@ public class CurrencyFragment extends Fragment {
     }
 
 
-    public void updateUI() {
-        CurrencyAdapter adapter = new CurrencyAdapter(getActivity(),currencies);
+    private void updateUI() {
+        CurrencyAdapter adapter = new CurrencyAdapter(getActivity(), currencies);
         listView.setAdapter(adapter);
         //adapter.notifyDataSetChanged();
 
+        if(type.equals(Constants.GOLD)) {
+            rowName.setText("Altın");
+        } else {
+            rowName.setText("Döviz Kuru");
+        }
+
+        progressBar.setVisibility(View.GONE);
+        listView.setVisibility(View.VISIBLE);
+        headerRow.setVisibility(View.VISIBLE);
+        topDivider.setVisibility(View.VISIBLE);
+
+    }
+
+    private void getDataFromAPI() {
+        CurrencyFragment.DownloadTask downloadTask = new CurrencyFragment.DownloadTask();
+        String url = "";
+
+        if (type.equals(Constants.GOLD)) {
+            url = "https://www.doviz.com/api/v1/golds/all/latest";
+        } else {
+            url = "https://www.doviz.com/api/v1/currencies/all/latest";
+        }
+
+        downloadTask.execute(url);
+    }
+
+    private void showAnErrorMessage() {
+        progressBar.setVisibility(View.GONE);
+        errorTextView.setVisibility(View.VISIBLE);
     }
 
 
-
     // Cihazın internet bağlantısını kontrol eder!
-    public boolean isOnline() {
+    public boolean checkConnection() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnectedOrConnecting();

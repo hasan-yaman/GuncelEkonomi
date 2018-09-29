@@ -27,10 +27,10 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -97,27 +97,18 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         Fragment fragment = null;
-        Bundle bundle = new Bundle();
 
         if (id == R.id.nav_altin) {
-            fragment = new CurrencyFragment();
-            // TODO burayı newInstance ile çöz
-            bundle.putString("type", "gold");
-            setTitle("Altın");
+            fragment = CurrencyFragment.newInstance(Constants.GOLD);
         } else if (id == R.id.nav_borsa) {
             fragment = new StockMarketFragment();
-            setTitle("Borsa");
         } else if (id == R.id.nav_doviz) {
-            fragment = new CurrencyFragment();
-            bundle.putString("type", "currency");
-            setTitle("Döviz");
+            fragment = CurrencyFragment.newInstance(Constants.CURRENCY);
         } else if (id == R.id.nav_cryptocurrency) {
             fragment = new CryptocurrencyFragment();
         }
 
-
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragment.setArguments(bundle);
 
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
@@ -137,12 +128,7 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
     }
 
-    // Cihazın internet bağlantısını kontrol eder!
-    public boolean isOnline() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnectedOrConnecting();
-    }
+
 }
 
 

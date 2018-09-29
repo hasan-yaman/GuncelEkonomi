@@ -1,46 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent">
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:layout_height="50dp">
 
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_weight="0.85">
 
         <TextView
             android:id="@+id/fullName"
-            android:text="Bitcoin (BTC)"
-            android:layout_weight="1"
-            android:background="#dcdcdc"
-            android:gravity="center"
-            android:padding="20dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:text="Request Network"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_weight="0.95">
 
         <TextView
             android:id="@+id/value"
-            android:text="39.790,19 ₺"
-            android:layout_weight="1"
-            android:background="#d3d3d3"
-            android:textColor="#000000"
-            android:padding="20dp"
-            android:gravity="center"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="39.790,47 ₺"
+            android:textColor="@color/black"
+            android:textSize="12sp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_weight="0.7">
 
         <TextView
             android:id="@+id/volume"
-            android:text="5.156.272.337"
-            android:layout_weight="1"
-            android:background="#d3d3d3"
-            android:textColor="#000000"
-            android:padding="20dp"
-            android:gravity="center"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="4.637.482.914"
+            android:textColor="@color/black"
+            android:textSize="12sp"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/changeRate"
-            android:text="%1.65"
-            android:layout_weight="1"
-            android:background="#d3d3d3"
-            android:textColor="@color/red"
-            android:padding="20dp"
-            android:gravity="center"/>
-    </TableRow>
-</RelativeLayout>
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@color/red"
+            android:gravity="center"
+            android:text="% 12.54"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+
+
+    </RelativeLayout>
+
+</TableRow>

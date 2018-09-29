@@ -11,13 +11,14 @@ import android.widget.TextView;
 import com.hasanyaman.guncelekonomi.Data.Cryptocurrency;
 import com.hasanyaman.guncelekonomi.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class CrytocurrencyAdapter extends BaseAdapter {
+public class CryptocurrencyAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<Cryptocurrency> cryptocurrencies;
 
-    public CrytocurrencyAdapter(Context context, ArrayList<Cryptocurrency> cryptocurrencies) {
+    public CryptocurrencyAdapter(Context context, ArrayList<Cryptocurrency> cryptocurrencies) {
         this.context = context;
         this.cryptocurrencies = cryptocurrencies;
 
@@ -57,17 +58,23 @@ public class CrytocurrencyAdapter extends BaseAdapter {
         }
 
         holder.fullNameTextView.setText(cryptocurrencies.get(position).getFullName());
+
         String value = cryptocurrencies.get(position).getValue_try() + " ₺";
         holder.valueTextView.setText(value);
-        holder.volumeTextView.setText(String.valueOf(cryptocurrencies.get(position).getVolume()));
-        String changeRate = "%" + String.valueOf(cryptocurrencies.get(position).getChangeRate());
+
+        DecimalFormat decimalFormatV = new DecimalFormat("###,###,###,###");
+        String volume = decimalFormatV.format(Double.parseDouble(Long.toString(cryptocurrencies.get(position).getVolume())));
+        holder.volumeTextView.setText(volume);
+
+        String changeRate = "% " + String.valueOf(cryptocurrencies.get(position).getChangeRate());
         holder.changeRateTextView.setText(changeRate);
 
         if(cryptocurrencies.get(position).getChangeRate() > 0) {
-            holder.changeRateTextView.setTextColor(context.getResources().getColor(R.color.green));
+            holder.changeRateTextView.setBackgroundColor(context.getResources().getColor(R.color.green));
+        } else if (cryptocurrencies.get(position).getChangeRate() < 0){
+            holder.changeRateTextView.setBackgroundColor(context.getResources().getColor(R.color.red));
         } else {
-            holder.changeRateTextView.setTextColor(context.getResources().getColor(R.color.red));
-
+            holder.changeRateTextView.setBackgroundColor(context.getResources().getColor(R.color.yellow));
         }
 
         return convertView;

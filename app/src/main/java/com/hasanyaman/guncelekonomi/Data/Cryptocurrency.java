@@ -5,10 +5,10 @@ public class Cryptocurrency {
     private String symbol;
     private String value_try;
     private double changeRate;
-    private double volume;
+    private long volume;
     private int rank;
 
-    public Cryptocurrency(String fullName, String symbol, String value_try, double changeRate, double volume, int rank) {
+    public Cryptocurrency(String fullName, String symbol, String value_try, double changeRate, long volume, int rank) {
         this.fullName = fullName;
         this.symbol = symbol;
         this.value_try = value_try;
@@ -49,11 +49,11 @@ public class Cryptocurrency {
         this.changeRate = changeRate;
     }
 
-    public double getVolume() {
+    public long getVolume() {
         return volume;
     }
 
-    public void setVolume(double volume) {
+    public void setVolume(long volume) {
         this.volume = volume;
     }
 

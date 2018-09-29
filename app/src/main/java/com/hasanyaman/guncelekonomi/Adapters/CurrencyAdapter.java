@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.hasanyaman.guncelekonomi.Data.Currency;
 import com.hasanyaman.guncelekonomi.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class CurrencyAdapter extends BaseAdapter {
@@ -47,7 +48,6 @@ public class CurrencyAdapter extends BaseAdapter {
 
             holder.nameTextView = convertView.findViewById(R.id.name);
             holder.valueTextView = convertView.findViewById(R.id.value);
-            holder.arrowImageView = convertView.findViewById(R.id.imgArrow);
             holder.changeRateTextView = convertView.findViewById(R.id.changeRate);
 
             convertView.setTag(holder);
@@ -57,13 +57,22 @@ public class CurrencyAdapter extends BaseAdapter {
 
 
         holder.nameTextView.setText(currencies.get(position).getName());
-        holder.valueTextView.setText(String.valueOf(currencies.get(position).getValue()));
-        holder.changeRateTextView.setText(String.valueOf(currencies.get(position).getChangeRate()));
+
+        DecimalFormat decimalFormatV = new DecimalFormat("#.####");
+        holder.valueTextView.setText(decimalFormatV.format(currencies.get(position).getValue()));
+
+        DecimalFormat decimalFormatCR = new DecimalFormat("#.##");
+        String changeRate = "% " + decimalFormatCR.format(currencies.get(position).getChangeRate());
+        holder.changeRateTextView.setText(changeRate);
+
         if(currencies.get(position).getChangeRate() > 0) {
-            holder.arrowImageView.setImageResource(R.drawable.up);
+            holder.changeRateTextView.setBackgroundColor(context.getResources().getColor(R.color.green));
+        } else if (currencies.get(position).getChangeRate() < 0){
+            holder.changeRateTextView.setBackgroundColor(context.getResources().getColor(R.color.red));
         } else {
-            holder.arrowImageView.setImageResource(R.drawable.down);
+            holder.changeRateTextView.setBackgroundColor(context.getResources().getColor(R.color.yellow));
         }
+
 
         return convertView;
     }
@@ -71,7 +80,6 @@ public class CurrencyAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView nameTextView;
         TextView valueTextView;
-        ImageView arrowImageView;
         TextView changeRateTextView;
     }
 }

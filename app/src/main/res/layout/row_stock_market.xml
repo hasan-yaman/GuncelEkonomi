@@ -1,103 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+<TableRow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:text="BIST 100"
-        />
 
-    <TextView
-        android:id="@+id/latest"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_alignTop="@+id/name"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="30dp"
-        android:text="99992.27"/>
+    <RelativeLayout
+        android:layout_weight="1">
 
-    <ImageView
-        android:id="@+id/imgArrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignTop="@+id/latest"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/up"/>
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="BIST 100"
+            />
 
-    <TextView
-        android:id="@+id/changeRate"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_alignLeft="@+id/imgArrow"
-        android:layout_alignStart="@+id/imgArrow"
-        android:layout_below="@+id/latest"
-        android:layout_marginLeft="40dp"
-        android:layout_marginStart="40dp"
-        android:text="-0.30554723873372"/>
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/firstSeanceLowest"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imgArrow"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:text="İlk seans en düşük: 99748.09"/>
+    <RelativeLayout
+        android:layout_weight="0.75">
 
-    <TextView
-        android:id="@+id/firstSeanceHighest"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_below="@+id/firstSeanceLowest"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:text="İlk seans en yüksek: 99748.09"/>
+        <TextView
+            android:id="@+id/latest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="99956.0"/>
 
-    <TextView
-        android:id="@+id/firstSeanceClosing"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_below="@+id/firstSeanceHighest"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:text="İlk seans en kapanış: 99748.09"/>
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/secondSeanceLowest"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_below="@+id/firstSeanceClosing"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:text="İkinci seans en düşük: 99748.09"/>
+    <RelativeLayout
+        android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/secondSeanceHighest"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_below="@+id/secondSeanceLowest"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:text="İkinci seans en yüksek: 99748.09"/>
+        <TextView
+            android:id="@+id/changeRate"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:textColor="@color/white"
+            android:background="@color/red"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="-0.34"/>
 
-    <TextView
-        android:id="@+id/secondSeanceClosing"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_below="@+id/secondSeanceHighest"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:text="İkinci seans en kapanış: 99748.09"/>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+
+</TableRow>

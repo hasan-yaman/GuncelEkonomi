@@ -5,10 +5,91 @@
                 android:layout_height="match_parent"
                 tools:context=".CryptocurrencyFragment">
 
+    <TableRow
+        android:id="@+id/headerRow"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:layout_weight="0.85">
+
+            <TextView
+                android:id="@+id/rowName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Kripto Para"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="0.95">
+
+            <TextView
+                android:id="@+id/rowValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Satış(₺)"
+                android:textColor="@color/black"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="0.7">
+
+            <TextView
+                android:id="@+id/volumeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Hacim"
+                android:textColor="@color/black"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/changeRate"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="Fark"/>
+
+
+        </RelativeLayout>
+
+    </TableRow>
+
+    <View
+        android:id="@+id/topDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/red"
+        android:layout_marginTop="50dp"
+        android:visibility="invisible"/>
+
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:visibility="invisible">
     </ListView>
 
     <ProgressBar
@@ -18,5 +99,15 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:text="@string/error_message"
+        android:textColor="@color/red"
+        android:textSize="18sp"/>
 
 </RelativeLayout>

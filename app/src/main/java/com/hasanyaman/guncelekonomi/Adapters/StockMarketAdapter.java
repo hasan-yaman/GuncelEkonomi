@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.hasanyaman.guncelekonomi.R;
 import com.hasanyaman.guncelekonomi.Data.StockMarket;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class StockMarketAdapter extends BaseAdapter {
@@ -48,14 +49,7 @@ public class StockMarketAdapter extends BaseAdapter {
 
             holder.nameTextView = convertView.findViewById(R.id.name);
             holder.latestTextView = convertView.findViewById(R.id.latest);
-            holder.imgArrow = convertView.findViewById(R.id.imgArrow);
             holder.changeRate = convertView.findViewById(R.id.changeRate);
-            holder.firstSeanceLowest = convertView.findViewById(R.id.firstSeanceLowest);
-            holder.firstSeanceHighest = convertView.findViewById(R.id.firstSeanceHighest);
-            holder.firstSeanceClosing = convertView.findViewById(R.id.firstSeanceClosing);
-            holder.secondSeanceLowest = convertView.findViewById(R.id.secondSeanceLowest);
-            holder.secondSeanceHighest = convertView.findViewById(R.id.secondSeanceHighest);
-            holder.secondSeanceClosing = convertView.findViewById(R.id.secondSeanceClosing);
 
             convertView.setTag(holder);
         } else {
@@ -64,43 +58,19 @@ public class StockMarketAdapter extends BaseAdapter {
 
 
         holder.nameTextView.setText(stockMarkets.get(position).getFullName());
-        holder.latestTextView.setText(String.valueOf(stockMarkets.get(position).getLatest()));
-        holder.changeRate.setText(String.valueOf(stockMarkets.get(position).getChangeRate()));
-        if(stockMarkets.get(position).getChangeRate() > 0){
-            holder.imgArrow.setImageResource(R.drawable.up);
-        } else {
-            holder.imgArrow.setImageResource(R.drawable.down);
-        }
-        if(stockMarkets.get(position).getFirstSeanceLowest() != 0) {
-            holder.firstSeanceLowest.setText(String.valueOf(stockMarkets.get(position).getFirstSeanceLowest()));
-        } else {
-            holder.firstSeanceLowest.setVisibility(View.GONE);
-        }
-        if(stockMarkets.get(position).getFirstSeanceHighest() != 0) {
-            holder.firstSeanceHighest.setText(String.valueOf(stockMarkets.get(position).getFirstSeanceHighest()));
-        } else {
-            holder.firstSeanceHighest.setVisibility(View.GONE);
-        }
-        if(stockMarkets.get(position).getFirstSeanceClosing() != 0) {
-            holder.firstSeanceClosing.setText(String.valueOf(stockMarkets.get(position).getFirstSeanceClosing()));
-        } else {
-            holder.firstSeanceClosing.setVisibility(View.GONE);
-        }
 
-        if(stockMarkets.get(position).getSecondSeanceLowest() != 0) {
-            holder.secondSeanceLowest.setText(String.valueOf(stockMarkets.get(position).getSecondSeanceLowest()));
+        holder.latestTextView.setText(String.valueOf(stockMarkets.get(position).getLatest()));
+
+        DecimalFormat decimalFormatCR = new DecimalFormat("#.##");
+        String changeRate = "% " + decimalFormatCR.format(stockMarkets.get(position).getChangeRate());
+        holder.changeRate.setText(changeRate);
+
+        if(stockMarkets.get(position).getChangeRate() > 0) {
+            holder.changeRate.setBackgroundColor(context.getResources().getColor(R.color.green));
+        } else if (stockMarkets.get(position).getChangeRate() < 0){
+            holder.changeRate.setBackgroundColor(context.getResources().getColor(R.color.red));
         } else {
-            holder.secondSeanceLowest.setVisibility(View.GONE);
-        }
-        if(stockMarkets.get(position).getSecondSeanceHighest() != 0) {
-            holder.secondSeanceHighest.setText(String.valueOf(stockMarkets.get(position).getSecondSeanceHighest()));
-        } else {
-            holder.secondSeanceHighest.setVisibility(View.GONE);
-        }
-        if(stockMarkets.get(position).getSecondSeanceClosing() != 0) {
-            holder.secondSeanceClosing.setText(String.valueOf(stockMarkets.get(position).getSecondSeanceClosing()));
-        } else {
-            holder.secondSeanceClosing.setVisibility(View.GONE);
+            holder.changeRate.setBackgroundColor(context.getResources().getColor(R.color.yellow));
         }
 
 
@@ -110,13 +80,12 @@ public class StockMarketAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView nameTextView;
         TextView latestTextView;
-        ImageView imgArrow;
         TextView changeRate;
-        TextView firstSeanceLowest;
+        /*TextView firstSeanceLowest;
         TextView firstSeanceHighest;
         TextView firstSeanceClosing;
         TextView secondSeanceLowest;
         TextView secondSeanceHighest;
-        TextView secondSeanceClosing;
+        TextView secondSeanceClosing; */
     }
 }

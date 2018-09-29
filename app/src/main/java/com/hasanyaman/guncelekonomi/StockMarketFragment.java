@@ -1,24 +1,35 @@
 package com.hasanyaman.guncelekonomi;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TableRow;
+import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hasanyaman.guncelekonomi.Adapters.StockMarketAdapter;
+import com.hasanyaman.guncelekonomi.Data.Currency;
 import com.hasanyaman.guncelekonomi.Data.StockMarket;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,24 +45,22 @@ import java.util.ArrayList;
  */
 public class StockMarketFragment extends Fragment implements OnTaskCompleted {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     private static final String[] STOCK_MARKETS = {"XU100","XU050","XU030"};
     boolean[] allDone = {false, false, false};
 
     ArrayList<StockMarket> stockMarkets = new ArrayList<>();
-    ListView listView;
     StockMarketAdapter stockMarketAdapter;
 
+    ListView listView;
     ProgressBar progressBar;
 
+    TableRow headerRow;
+    View topDivider;
+    TextView errorTextView;
+    SharedPreferences sharedPreferences;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    boolean isOnline;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -67,16 +76,11 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment StockMarketFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static StockMarketFragment newInstance(String param1, String param2) {
+    public static StockMarketFragment newInstance() {
         StockMarketFragment fragment = new StockMarketFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -84,10 +88,6 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
 
@@ -101,11 +101,58 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
 
         listView = inflatedView.findViewById(R.id.listView);
         progressBar = inflatedView.findViewById(R.id.progress_bar);
+        headerRow = inflatedView.findViewById(R.id.headerRow);
+        topDivider = inflatedView.findViewById(R.id.topDivider);
+        errorTextView = inflatedView.findViewById(R.id.errorMessage);
 
-        for(int i = 0; i<STOCK_MARKETS.length; i++) {
-            String url = "https://www.doviz.com/api/v1/indexes/"+ STOCK_MARKETS[i] + "/latest";
-            new DownloadTask(this,i).execute(url);
+        sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
+        isOnline = checkConnection();
 
+        if(isOnline) {
+            long lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_STOCK_MARKET, 0);
+            long currentTime = System.currentTimeMillis();
+
+            boolean isExpired = currentTime - lastUpdateTime > Constants.EXPIRE_TIME;
+
+            if(isExpired) {
+                getDataFromAPI();
+            } else {
+                Gson gson = new Gson();
+                String response = sharedPreferences.getString(Constants.STOCK_MARKET_LIST, "");
+
+                if(response.equals("")) {
+                    getDataFromAPI();
+                } else {
+                    Type type = new TypeToken<ArrayList<StockMarket>>(){}.getType();
+                    stockMarkets = gson.fromJson(response,type);
+                    updateUI();
+                }
+            }
+
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Lütfen internet bağlantınızı kontrol edin")
+                    .setPositiveButton("Tamam", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    })
+                    .create()
+                    .show();
+
+            Gson gson = new Gson();
+            String response =sharedPreferences.getString(Constants.STOCK_MARKET_LIST,"");
+
+
+            if(response.equals("")) {
+                Log.i("Info","new data");
+                showAnErrorMessage();
+            } else {
+                Log.i("Info","old data");
+                Type type = new TypeToken<ArrayList<Currency>>(){}.getType();
+                stockMarkets = gson.fromJson(response,type);
+                updateUI();
+            }
         }
 
         return inflatedView;
@@ -116,11 +163,38 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         Log.i("Info","Completed a task");
         if(isAllDone()) {
             Log.i("Info","Completed all the tasks");
-            stockMarketAdapter = new StockMarketAdapter(getActivity(), stockMarkets);
-            listView.setAdapter(stockMarketAdapter);
-            progressBar.setVisibility(View.GONE);
+            updateUI();
+
+            // Son güncelleme zamanını kaydet!
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putLong(Constants.LAST_UPDATE_TIME_STOCK_MARKET, System.currentTimeMillis());
+
+            // Çektiğin verileri kaydet!
+
+            Gson gson = new Gson();
+            String jsonArrayList = gson.toJson(stockMarkets);
+
+            editor.putString(Constants.STOCK_MARKET_LIST, jsonArrayList);
+
+            editor.apply();
         }
 
+    }
+    private void updateUI() {
+        stockMarketAdapter = new StockMarketAdapter(getActivity(), stockMarkets);
+        listView.setAdapter(stockMarketAdapter);
+
+        progressBar.setVisibility(View.GONE);
+        listView.setVisibility(View.VISIBLE);
+        headerRow.setVisibility(View.VISIBLE);
+        topDivider.setVisibility(View.VISIBLE);
+    }
+
+    private void showAnErrorMessage() {
+        progressBar.setVisibility(View.GONE);
+        errorTextView.setVisibility(View.VISIBLE);
     }
 
     private boolean isAllDone() {
@@ -155,6 +229,14 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         mListener = null;
     }
 
+    private void getDataFromAPI() {
+        for(int i = 0; i<STOCK_MARKETS.length; i++) {
+            String url = "https://www.doviz.com/api/v1/indexes/"+ STOCK_MARKETS[i] + "/latest";
+            new DownloadTask(this,i).execute(url);
+
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -166,7 +248,6 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -221,5 +302,10 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
                 e.printStackTrace();
             }
         }
+    }
+    public boolean checkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 }
