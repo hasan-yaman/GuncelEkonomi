@@ -22,9 +22,14 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hasanyaman.guncelekonomi.Adapters.StockMarketAdapter;
-import com.hasanyaman.guncelekonomi.Data.Currency;
 import com.hasanyaman.guncelekonomi.Data.StockMarket;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -149,7 +154,7 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
                 showAnErrorMessage();
             } else {
                 Log.i("Info","old data");
-                Type type = new TypeToken<ArrayList<Currency>>(){}.getType();
+                Type type = new TypeToken<ArrayList<StockMarket>>(){}.getType();
                 stockMarkets = gson.fromJson(response,type);
                 updateUI();
             }
@@ -263,25 +268,28 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
 
         @Override
         protected String doInBackground(String... params) {
-            URL url;
-            HttpURLConnection connection;
+            String response;
+
             try {
-                url = new URL(params[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = connection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(inputStream);
-                int data = reader.read();
-                String result = "";
-                while (data != -1) {
-                    char current = (char) data;
-                    result += current;
-                    data = reader.read();
-                }
-                return result;
+
+                HttpClient httpclient = new DefaultHttpClient();
+
+                HttpPost httppost = new HttpPost(params[0]);
+
+                HttpResponse httpResponse = httpclient.execute(httppost);
+
+                HttpEntity httpEntity = httpResponse.getEntity();
+
+                response = EntityUtils.toString(httpEntity);
+
+                return response;
+
             } catch (Exception e) {
-                Log.i("Info","Hata!2" + e.toString());
+
+                Log.e("Error ", e.toString());
             }
-            return "FAIL";
+
+            return null;
         }
 
         @Override

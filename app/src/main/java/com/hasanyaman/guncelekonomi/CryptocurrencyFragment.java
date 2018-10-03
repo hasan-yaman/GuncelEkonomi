@@ -26,6 +26,12 @@ import com.hasanyaman.guncelekonomi.Adapters.CryptocurrencyAdapter;
 import com.hasanyaman.guncelekonomi.Data.Cryptocurrency;
 import com.hasanyaman.guncelekonomi.Data.Currency;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -216,37 +222,48 @@ public class CryptocurrencyFragment extends Fragment {
     public class DownloadTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... strings) {
-            URL url;
-            HttpURLConnection connection;
+
+            Log.i("Info","doInBackground start");
+
+            String response;
+
             try {
-                url = new URL(strings[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = connection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(inputStream);
-                int data = reader.read();
-                String result = "";
-                while (data != -1) {
-                    char current = (char) data;
-                    result += current;
-                    data = reader.read();
-                }
-                return result;
+
+                HttpClient httpclient = new DefaultHttpClient();
+
+                HttpPost httppost = new HttpPost(strings[0]);
+
+                HttpResponse httpResponse = httpclient.execute(httppost);
+
+                HttpEntity httpEntity = httpResponse.getEntity();
+
+                response = EntityUtils.toString(httpEntity);
+
+                return response;
+
             } catch (Exception e) {
-                Log.i("Info", "Hata!2" + e.toString());
+
+                Log.e("Error ", e.toString());
             }
-            return "FAIL";
+
+            return null;
         }
 
         @Override
         protected void onPostExecute(String s) {
+            Log.i("Info","onPostExecute start");
             super.onPostExecute(s);
             try {
+                Log.i("Info","before jsonArray");
                 JSONArray jsonArray = new JSONArray(s);
+                Log.i("Info", "start of for loop");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject object = jsonArray.getJSONObject(i);
                     cryptocurrencies.add(new Cryptocurrency(object.getString("full_name"), object.getString("symbol"), object.getString("selling_try"),
                             object.getDouble("change_rate"), object.getLong("volume"), object.getInt("rank")));
                 }
+
+                Log.i("Info","start of sorting");
 
                 Collections.sort(cryptocurrencies, new Comparator<Cryptocurrency>() {
                     @Override
@@ -255,7 +272,11 @@ public class CryptocurrencyFragment extends Fragment {
                     }
                 });
 
+                Log.i("Info","start updating UI");
+
                 updateUI();
+
+                Log.i("Info","start saving");
 
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 

@@ -1,8 +1,5 @@
 package com.hasanyaman.guncelekonomi;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,12 +33,13 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        getSupportActionBar().setTitle("Güncel Ekonomi");
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
         // Uygulama açıldığında döviz menüsünü göster!
+
         Fragment fragment = new CurrencyFragment();
         Bundle bundle = new Bundle();
         bundle.putString("type", "currency");
@@ -49,6 +47,10 @@ public class MainActivity extends AppCompatActivity
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+        navigationView.setCheckedItem(R.id.nav_doviz);
+        getSupportActionBar().setTitle("Döviz");
+
 
     }
 
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             fragment = new SettingsFragment();
-            setTitle("Ayarlar");
+            getSupportActionBar().setTitle("Ayarlar");
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -100,19 +102,23 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_altin) {
             fragment = CurrencyFragment.newInstance(Constants.GOLD);
+            getSupportActionBar().setTitle("Altın");
         } else if (id == R.id.nav_borsa) {
             fragment = new StockMarketFragment();
+            getSupportActionBar().setTitle("Borsa");
         } else if (id == R.id.nav_doviz) {
             fragment = CurrencyFragment.newInstance(Constants.CURRENCY);
+            getSupportActionBar().setTitle("Döviz");
         } else if (id == R.id.nav_cryptocurrency) {
             fragment = new CryptocurrencyFragment();
+            getSupportActionBar().setTitle("Kripto Paralar");
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         return true;

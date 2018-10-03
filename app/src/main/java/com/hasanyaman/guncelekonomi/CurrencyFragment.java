@@ -24,6 +24,12 @@ import com.google.gson.reflect.TypeToken;
 import com.hasanyaman.guncelekonomi.Adapters.CurrencyAdapter;
 import com.hasanyaman.guncelekonomi.Data.Currency;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -247,25 +253,28 @@ public class CurrencyFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... params) {
-            URL url;
-            HttpURLConnection connection;
+            String response;
+
             try {
-                url = new URL(params[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = connection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(inputStream);
-                int data = reader.read();
-                String result = "";
-                while (data != -1) {
-                    char current = (char) data;
-                    result += current;
-                    data = reader.read();
-                }
-                return result;
+
+                HttpClient httpclient = new DefaultHttpClient();
+
+                HttpPost httppost = new HttpPost(params[0]);
+
+                HttpResponse httpResponse = httpclient.execute(httppost);
+
+                HttpEntity httpEntity = httpResponse.getEntity();
+
+                response = EntityUtils.toString(httpEntity);
+
+                return response;
+
             } catch (Exception e) {
-                Log.i("Info", "Hata!DownloadTask!doInBackground" + e.toString());
+
+                Log.e("Error ", e.toString());
             }
-            return "";
+
+            return null;
         }
 
         @Override
