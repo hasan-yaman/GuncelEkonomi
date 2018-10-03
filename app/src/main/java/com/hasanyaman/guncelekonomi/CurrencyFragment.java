@@ -41,7 +41,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -123,8 +122,8 @@ public class CurrencyFragment extends Fragment {
             // Eğer eski datalar boşsa (yoksa) -> yeniden çek
 
             long lastUpdateTime = 0;
-            if(type.equals(Constants.GOLD)) {
-               lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_GOLD, 0);
+            if (type.equals(Constants.GOLD)) {
+                lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_GOLD, 0);
             } else {
                 lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_CURRENCY, 0);
             }
@@ -133,36 +132,37 @@ public class CurrencyFragment extends Fragment {
 
             boolean isExpired = currentTime - lastUpdateTime > Constants.EXPIRE_TIME;
 
-            Log.i("Info","last update time " + lastUpdateTime);
-            Log.i("Info","current time " + currentTime);
-            Log.i("Info","difference " + (currentTime - lastUpdateTime));
+            Log.i("Info", "last update time " + lastUpdateTime);
+            Log.i("Info", "current time " + currentTime);
+            Log.i("Info", "difference " + (currentTime - lastUpdateTime));
 
 
-            if(isExpired) {
-                Log.i("Info","is expired");
+            if (isExpired) {
+                Log.i("Info", "is expired");
 
                 getDataFromAPI();
 
             } else {
-                Log.i("Info","is not expired");
+                Log.i("Info", "is not expired");
 
                 // Bu durumda eski dataya bak.
 
                 Gson gson = new Gson();
                 String response = "";
-                if(type.equals(Constants.GOLD)) {
-                    response = sharedPreferences.getString(Constants.GOLD_LIST,"");
+                if (type.equals(Constants.GOLD)) {
+                    response = sharedPreferences.getString(Constants.GOLD_LIST, "");
                 } else {
-                    response = sharedPreferences.getString(Constants.CURRENCY_LIST,"");
+                    response = sharedPreferences.getString(Constants.CURRENCY_LIST, "");
                 }
 
-                if(response.equals("")) {
-                    Log.i("Info","new data");
+                if (response.equals("")) {
+                    Log.i("Info", "new data");
                     getDataFromAPI();
                 } else {
-                    Log.i("Info","old data");
-                    Type type = new TypeToken<ArrayList<Currency>>(){}.getType();
-                    currencies = gson.fromJson(response,type);
+                    Log.i("Info", "old data");
+                    Type type = new TypeToken<ArrayList<Currency>>() {
+                    }.getType();
+                    currencies = gson.fromJson(response, type);
                     updateUI();
                 }
             }
@@ -183,19 +183,20 @@ public class CurrencyFragment extends Fragment {
 
             Gson gson = new Gson();
             String response = "";
-            if(type.equals(Constants.GOLD)) {
-                response = sharedPreferences.getString(Constants.GOLD_LIST,"");
+            if (type.equals(Constants.GOLD)) {
+                response = sharedPreferences.getString(Constants.GOLD_LIST, "");
             } else {
-                response = sharedPreferences.getString(Constants.CURRENCY_LIST,"");
+                response = sharedPreferences.getString(Constants.CURRENCY_LIST, "");
             }
 
-            if(response.equals("")) {
-                Log.i("Info","new data");
+            if (response.equals("")) {
+                Log.i("Info", "new data");
                 showAnErrorMessage();
             } else {
-                Log.i("Info","old data");
-                Type type = new TypeToken<ArrayList<Currency>>(){}.getType();
-                currencies = gson.fromJson(response,type);
+                Log.i("Info", "old data");
+                Type type = new TypeToken<ArrayList<Currency>>() {
+                }.getType();
+                currencies = gson.fromJson(response, type);
                 updateUI();
             }
 
@@ -289,9 +290,10 @@ public class CurrencyFragment extends Fragment {
                     JSONObject object = jsonArray.getJSONObject(i);
                     //Log.i("Info","goldObject -> " + goldObject);
                     String name = object.getString("full_name");
-                    double value = object.getDouble("selling");
+                    double selling = object.getDouble("selling");
+                    double buying = object.getDouble("buying");
                     double changeRate = object.getDouble("change_rate");
-                    currencies.add(new Currency(name, value, changeRate));
+                    currencies.add(new Currency(name, buying, selling, changeRate));
                 }
 
                 updateUI();
@@ -327,7 +329,7 @@ public class CurrencyFragment extends Fragment {
         listView.setAdapter(adapter);
         //adapter.notifyDataSetChanged();
 
-        if(type.equals(Constants.GOLD)) {
+        if (type.equals(Constants.GOLD)) {
             rowName.setText("Altın");
         } else {
             rowName.setText("Döviz Kuru");

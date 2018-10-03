@@ -32,7 +32,7 @@
             android:layout_weight="1">
 
             <TextView
-                android:id="@+id/rowValue"
+                android:id="@+id/rowSellingValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
@@ -40,6 +40,21 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:text="Satış(₺)"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/rowBuyingValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="Alış(₺)"/>
 
         </RelativeLayout>
 

@@ -47,7 +47,8 @@ public class CurrencyAdapter extends BaseAdapter {
             holder = new ViewHolder();
 
             holder.nameTextView = convertView.findViewById(R.id.name);
-            holder.valueTextView = convertView.findViewById(R.id.value);
+            holder.sellingValueTextView = convertView.findViewById(R.id.sellingValue);
+            holder.buyingValueTextView = convertView.findViewById(R.id.buyingValue);
             holder.changeRateTextView = convertView.findViewById(R.id.changeRate);
 
             convertView.setTag(holder);
@@ -59,7 +60,8 @@ public class CurrencyAdapter extends BaseAdapter {
         holder.nameTextView.setText(currencies.get(position).getName());
 
         DecimalFormat decimalFormatV = new DecimalFormat("#.####");
-        holder.valueTextView.setText(decimalFormatV.format(currencies.get(position).getValue()));
+        holder.sellingValueTextView.setText(decimalFormatV.format(currencies.get(position).getSelling()));
+        holder.buyingValueTextView.setText(decimalFormatV.format(currencies.get(position).getBuying()));
 
         DecimalFormat decimalFormatCR = new DecimalFormat("#.##");
         String changeRate = "% " + decimalFormatCR.format(currencies.get(position).getChangeRate());
@@ -79,7 +81,8 @@ public class CurrencyAdapter extends BaseAdapter {
 
     static class ViewHolder {
         TextView nameTextView;
-        TextView valueTextView;
+        TextView sellingValueTextView;
+        TextView buyingValueTextView;
         TextView changeRateTextView;
     }
 }

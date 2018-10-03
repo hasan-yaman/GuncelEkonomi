@@ -2,12 +2,14 @@ package com.hasanyaman.guncelekonomi.Data;
 
 public class Currency {
     private String name;
-    private double value;
+    private double selling;
+    private double buying;
     private double changeRate;
 
-    public Currency(String name, double value, double changeRate) {
+    public Currency(String name, double buying, double selling, double changeRate) {
         this.name = name;
-        this.value = value;
+        this.buying = buying;
+        this.selling = selling;
         this.changeRate = changeRate;
     }
 
@@ -19,12 +21,20 @@ public class Currency {
         this.name = name;
     }
 
-    public double getValue() {
-        return value;
+    public double getSelling() {
+        return selling;
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public void setSelling(double selling) {
+        this.selling = selling;
+    }
+
+    public double getBuying() {
+        return buying;
+    }
+
+    public void setBuying(double buying) {
+        this.buying = buying;
     }
 
     public double getChangeRate() {
