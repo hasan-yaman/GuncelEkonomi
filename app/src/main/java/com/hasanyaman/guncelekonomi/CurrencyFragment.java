@@ -2,6 +2,7 @@ package com.hasanyaman.guncelekonomi;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TableRow;
@@ -105,6 +107,12 @@ public class CurrencyFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_currency, container, false);
 
         listView = inflatedView.findViewById(R.id.listView);
+
+        // Döviz kurlarının detayını göster.
+        if(type.equals(Constants.CURRENCY)) {
+            setDetailsListener();
+        }
+
         progressBar = inflatedView.findViewById(R.id.progress_bar);
         headerRow = inflatedView.findViewById(R.id.headerRow);
         topDivider = inflatedView.findViewById(R.id.topDivider);
@@ -239,7 +247,6 @@ public class CurrencyFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -285,15 +292,16 @@ public class CurrencyFragment extends Fragment {
                 //JSONObject jsonObject = new JSONObject(s);
                 JSONArray jsonArray = new JSONArray(s);
 
-                Log.i("Info", "jsonArray -> " + jsonArray);
+                //Log.i("Info", "jsonArray -> " + jsonArray);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject object = jsonArray.getJSONObject(i);
                     //Log.i("Info","goldObject -> " + goldObject);
                     String name = object.getString("full_name");
+                    String code = object.getString("code");
                     double selling = object.getDouble("selling");
                     double buying = object.getDouble("buying");
                     double changeRate = object.getDouble("change_rate");
-                    currencies.add(new Currency(name, buying, selling, changeRate));
+                    currencies.add(new Currency(name, code, buying, selling, changeRate));
                 }
 
                 updateUI();
@@ -358,6 +366,18 @@ public class CurrencyFragment extends Fragment {
     private void showAnErrorMessage() {
         progressBar.setVisibility(View.GONE);
         errorTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void setDetailsListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(), CurrencyDetailActivity.class);
+                String selectedItemCode = currencies.get(i).getCode();
+                intent.putExtra(Constants.SELECTED_ITEM_CODE,selectedItemCode);
+                startActivity(intent);
+            }
+        });
     }
 
 

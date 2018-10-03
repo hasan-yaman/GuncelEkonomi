@@ -14,6 +14,8 @@ public class Constants {
     public final static String STOCK_MARKET_LIST = "stock-market-list";
     public final static String CRYPTOCURRENCY_LIST = "cryptocurrency";
 
+    public final static String SELECTED_ITEM_CODE = "selected-item-code";
+
     public final static long EXPIRE_TIME = 5 * 60 * 1000; // 5 minutes
 
 

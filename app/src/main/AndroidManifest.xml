@@ -23,6 +23,8 @@
         </activity>
         <activity android:name=".GraphActivity">
         </activity>
+        <activity android:name=".CurrencyDetailActivity">
+        </activity>
     </application>
 
 </manifest>
