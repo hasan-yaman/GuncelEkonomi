@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -41,6 +42,8 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 /**
@@ -61,11 +64,18 @@ public class CurrencyFragment extends Fragment {
 
     ArrayList<Currency> currencies = new ArrayList<>();
     ProgressBar progressBar;
+
     ListView listView;
+    CurrencyAdapter adapter;
+
     TableRow headerRow;
     TextView rowName;
     View topDivider;
     TextView errorTextView;
+
+    RelativeLayout rowSellingValueRL;
+    RelativeLayout rowBuyingValueRL;
+    RelativeLayout changeRateRL;
 
     boolean isOnline;
 
@@ -118,6 +128,10 @@ public class CurrencyFragment extends Fragment {
         topDivider = inflatedView.findViewById(R.id.topDivider);
         rowName = inflatedView.findViewById(R.id.rowName);
         errorTextView = inflatedView.findViewById(R.id.errorMessage);
+
+        rowSellingValueRL = inflatedView.findViewById(R.id.rowSellingValueRL);
+        rowBuyingValueRL = inflatedView.findViewById(R.id.rowBuyingValueRL);
+        changeRateRL = inflatedView.findViewById(R.id.changeRateRL);
 
 
         sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
@@ -211,6 +225,76 @@ public class CurrencyFragment extends Fragment {
         }
 
         return inflatedView;
+    }
+
+    private void handleSort() {
+        rowSellingValueRL.setOnClickListener(new View.OnClickListener() {
+
+            private boolean bigToSmall = true;
+
+            @Override
+            public void onClick(View view) {
+                Collections.sort(currencies, new Comparator<Currency>() {
+                    @Override
+                    public int compare(Currency c1, Currency c2) {
+                        if(bigToSmall) {
+                            // Büyükten kücüge sıralama
+                            return Double.compare(c2.getSelling(), c1.getSelling());
+                        } else {
+                            return Double.compare(c1.getSelling(), c2.getSelling());
+                        }
+
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+                bigToSmall = !bigToSmall;
+            }
+        });
+
+        rowBuyingValueRL.setOnClickListener(new View.OnClickListener() {
+
+            private boolean bigToSmall = true;
+
+            @Override
+            public void onClick(View view) {
+                Collections.sort(currencies, new Comparator<Currency>() {
+                    @Override
+                    public int compare(Currency c1, Currency c2) {
+                        if(bigToSmall) {
+                            return Double.compare(c2.getBuying(), c1.getBuying());
+                        } else {
+                            return Double.compare(c1.getBuying(), c2.getBuying());
+                        }
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+                bigToSmall = !bigToSmall;
+            }
+        });
+
+        changeRateRL.setOnClickListener(new View.OnClickListener() {
+
+            private boolean bigToSmall = true;
+
+            @Override
+            public void onClick(View view) {
+                Collections.sort(currencies, new Comparator<Currency>() {
+                    @Override
+                    public int compare(Currency c1, Currency c2) {
+                        if(bigToSmall) {
+                            return Double.compare(c2.getChangeRate(), c1.getChangeRate());
+                        } else {
+                            return Double.compare(c1.getChangeRate(), c2.getChangeRate());
+                        }
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+                bigToSmall = !bigToSmall;
+            }
+        });
     }
 
     public void onButtonPressed(Uri uri) {
@@ -344,7 +428,7 @@ public class CurrencyFragment extends Fragment {
 
 
     private void updateUI() {
-        CurrencyAdapter adapter = new CurrencyAdapter(getActivity(), currencies);
+        adapter = new CurrencyAdapter(getActivity(), currencies);
         listView.setAdapter(adapter);
         //adapter.notifyDataSetChanged();
 
@@ -358,6 +442,8 @@ public class CurrencyFragment extends Fragment {
         listView.setVisibility(View.VISIBLE);
         headerRow.setVisibility(View.VISIBLE);
         topDivider.setVisibility(View.VISIBLE);
+
+        handleSort();
 
     }
 

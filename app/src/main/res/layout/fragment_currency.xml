@@ -29,6 +29,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rowSellingValueRL"
             android:layout_weight="1">
 
             <TextView
@@ -44,6 +45,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rowBuyingValueRL"
             android:layout_weight="1">
 
             <TextView
@@ -59,6 +61,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/changeRateRL"
             android:layout_weight="1">
 
             <TextView
