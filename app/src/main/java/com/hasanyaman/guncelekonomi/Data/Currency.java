@@ -15,6 +15,13 @@ public class Currency {
         this.changeRate = changeRate;
     }
 
+    public Currency(String name, double buying, double selling, double changeRate) {
+        this.name = name;
+        this.buying = buying;
+        this.selling = selling;
+        this.changeRate = changeRate;
+    }
+
     public String getName() {
         return name;
     }

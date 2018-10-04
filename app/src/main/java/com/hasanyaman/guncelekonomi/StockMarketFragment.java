@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hasanyaman.guncelekonomi.Adapters.StockMarketAdapter;
 import com.hasanyaman.guncelekonomi.Data.StockMarket;
+import com.hasanyaman.guncelekonomi.Utilities.ArrayUtilities;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -50,7 +51,7 @@ import java.util.ArrayList;
  */
 public class StockMarketFragment extends Fragment implements OnTaskCompleted {
 
-    private static final String[] STOCK_MARKETS = {"XU100","XU050","XU030"};
+    private static final String[] STOCK_MARKETS = {"XU100", "XU050", "XU030"};
     boolean[] allDone = {false, false, false};
 
     ArrayList<StockMarket> stockMarkets = new ArrayList<>();
@@ -96,8 +97,6 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
     }
 
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -113,23 +112,24 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
         isOnline = checkConnection();
 
-        if(isOnline) {
+        if (isOnline) {
             long lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_STOCK_MARKET, 0);
             long currentTime = System.currentTimeMillis();
 
             boolean isExpired = currentTime - lastUpdateTime > Constants.EXPIRE_TIME;
 
-            if(isExpired) {
+            if (isExpired) {
                 getDataFromAPI();
             } else {
                 Gson gson = new Gson();
                 String response = sharedPreferences.getString(Constants.STOCK_MARKET_LIST, "");
 
-                if(response.equals("")) {
+                if (response.equals("")) {
                     getDataFromAPI();
                 } else {
-                    Type type = new TypeToken<ArrayList<StockMarket>>(){}.getType();
-                    stockMarkets = gson.fromJson(response,type);
+                    Type type = new TypeToken<ArrayList<StockMarket>>() {
+                    }.getType();
+                    stockMarkets = gson.fromJson(response, type);
                     updateUI();
                 }
             }
@@ -146,16 +146,17 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
                     .show();
 
             Gson gson = new Gson();
-            String response =sharedPreferences.getString(Constants.STOCK_MARKET_LIST,"");
+            String response = sharedPreferences.getString(Constants.STOCK_MARKET_LIST, "");
 
 
-            if(response.equals("")) {
-                Log.i("Info","new data");
+            if (response.equals("")) {
+                Log.i("Info", "new data");
                 showAnErrorMessage();
             } else {
-                Log.i("Info","old data");
-                Type type = new TypeToken<ArrayList<StockMarket>>(){}.getType();
-                stockMarkets = gson.fromJson(response,type);
+                Log.i("Info", "old data");
+                Type type = new TypeToken<ArrayList<StockMarket>>() {
+                }.getType();
+                stockMarkets = gson.fromJson(response, type);
                 updateUI();
             }
         }
@@ -165,9 +166,9 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
 
     @Override
     public void onTaskCompleted() {
-        Log.i("Info","Completed a task");
-        if(isAllDone()) {
-            Log.i("Info","Completed all the tasks");
+        Log.i("Info", "Completed a task");
+        if (ArrayUtilities.isAllDone(allDone)) {
+            Log.i("Info", "Completed all the tasks");
             updateUI();
 
             // Son güncelleme zamanını kaydet!
@@ -187,6 +188,7 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         }
 
     }
+
     private void updateUI() {
         stockMarketAdapter = new StockMarketAdapter(getActivity(), stockMarkets);
         listView.setAdapter(stockMarketAdapter);
@@ -202,14 +204,7 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         errorTextView.setVisibility(View.VISIBLE);
     }
 
-    private boolean isAllDone() {
-        for(boolean b : allDone) {
-            if(!b) {
-                return false;
-            }
-        }
-        return true;
-    }
+
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -235,9 +230,9 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
     }
 
     private void getDataFromAPI() {
-        for(int i = 0; i<STOCK_MARKETS.length; i++) {
-            String url = "https://www.doviz.com/api/v1/indexes/"+ STOCK_MARKETS[i] + "/latest";
-            new DownloadTask(this,i).execute(url);
+        for (int i = 0; i < STOCK_MARKETS.length; i++) {
+            String url = "https://www.doviz.com/api/v1/indexes/" + STOCK_MARKETS[i] + "/latest";
+            new DownloadTask(this, i).execute(url);
 
         }
     }
@@ -256,7 +251,7 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         void onFragmentInteraction(Uri uri);
     }
 
-    public  class DownloadTask extends AsyncTask<String, Void, String> {
+    public class DownloadTask extends AsyncTask<String, Void, String> {
 
         private OnTaskCompleted listener;
         private int index;
@@ -297,11 +292,11 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
             super.onPostExecute(s);
             try {
                 JSONObject jsonObject = new JSONObject(s);
-                Log.i("Info","jsonObject -> " + jsonObject);
+                Log.i("Info", "jsonObject -> " + jsonObject);
 
                 stockMarkets.add(new StockMarket(jsonObject.getString("full_name"),
-                        jsonObject.getDouble("latest"),jsonObject.getDouble("change_rate"),jsonObject.getDouble("first_seance_lowest"),jsonObject.getDouble("first_seance_highest"),jsonObject.getDouble("first_seance_closing"),
-                        jsonObject.getDouble("second_seance_lowest"),jsonObject.getDouble("second_seance_highest"),jsonObject.getDouble("second_seance_closing"),jsonObject.getDouble("previous_closing")));
+                        jsonObject.getDouble("latest"), jsonObject.getDouble("change_rate"), jsonObject.getDouble("first_seance_lowest"), jsonObject.getDouble("first_seance_highest"), jsonObject.getDouble("first_seance_closing"),
+                        jsonObject.getDouble("second_seance_lowest"), jsonObject.getDouble("second_seance_highest"), jsonObject.getDouble("second_seance_closing"), jsonObject.getDouble("previous_closing")));
 
                 allDone[index] = true;
                 listener.onTaskCompleted();
@@ -311,6 +306,7 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
             }
         }
     }
+
     public boolean checkConnection() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();

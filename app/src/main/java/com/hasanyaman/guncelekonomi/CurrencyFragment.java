@@ -109,7 +109,7 @@ public class CurrencyFragment extends Fragment {
         listView = inflatedView.findViewById(R.id.listView);
 
         // Döviz kurlarının detayını göster.
-        if(type.equals(Constants.CURRENCY)) {
+        if (type.equals(Constants.CURRENCY)) {
             setDetailsListener();
         }
 
@@ -252,6 +252,13 @@ public class CurrencyFragment extends Fragment {
 
 
     public class DownloadTask extends AsyncTask<String, Void, String> {
+
+        private boolean inCurrencyMode;
+
+        public DownloadTask(boolean inCurrencyMode) {
+            this.inCurrencyMode = inCurrencyMode;
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -297,11 +304,15 @@ public class CurrencyFragment extends Fragment {
                     JSONObject object = jsonArray.getJSONObject(i);
                     //Log.i("Info","goldObject -> " + goldObject);
                     String name = object.getString("full_name");
-                    String code = object.getString("code");
                     double selling = object.getDouble("selling");
                     double buying = object.getDouble("buying");
                     double changeRate = object.getDouble("change_rate");
-                    currencies.add(new Currency(name, code, buying, selling, changeRate));
+                    if (inCurrencyMode) {
+                        String code = object.getString("code");
+                        currencies.add(new Currency(name, code, buying, selling, changeRate));
+                    } else {
+                        currencies.add(new Currency(name, buying, selling, changeRate));
+                    }
                 }
 
                 updateUI();
@@ -351,7 +362,7 @@ public class CurrencyFragment extends Fragment {
     }
 
     private void getDataFromAPI() {
-        CurrencyFragment.DownloadTask downloadTask = new CurrencyFragment.DownloadTask();
+        CurrencyFragment.DownloadTask downloadTask = new CurrencyFragment.DownloadTask(type.equals(Constants.CURRENCY));
         String url = "";
 
         if (type.equals(Constants.GOLD)) {
@@ -374,7 +385,9 @@ public class CurrencyFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(), CurrencyDetailActivity.class);
                 String selectedItemCode = currencies.get(i).getCode();
-                intent.putExtra(Constants.SELECTED_ITEM_CODE,selectedItemCode);
+                String selectedItemFullName = currencies.get(i).getName();
+                intent.putExtra(Constants.SELECTED_ITEM_CODE, selectedItemCode);
+                intent.putExtra(Constants.SELECTED_ITEM_FULL_NAME, selectedItemFullName);
                 startActivity(intent);
             }
         });
