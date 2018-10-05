@@ -6,13 +6,15 @@ public class Currency {
     private double selling;
     private double buying;
     private double changeRate;
+    private long updateDate;
 
-    public Currency(String name, String code, double buying, double selling, double changeRate) {
+    public Currency(String name, String code, double buying, double selling, double changeRate, long updateDate) {
         this.name = name;
         this.code = code;
         this.buying = buying;
         this.selling = selling;
         this.changeRate = changeRate;
+        this.updateDate = updateDate;
     }
 
     public Currency(String name, double buying, double selling, double changeRate) {
@@ -60,5 +62,13 @@ public class Currency {
 
     public void setChangeRate(double changeRate) {
         this.changeRate = changeRate;
+    }
+
+    public long getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
     }
 }

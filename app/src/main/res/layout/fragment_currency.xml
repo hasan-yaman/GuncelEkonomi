@@ -5,6 +5,10 @@
                 android:layout_height="match_parent"
                 tools:context="com.hasanyaman.guncelekonomi.CurrencyFragment">
 
+
+
+
+
     <TableRow
         android:id="@+id/headerRow"
         android:layout_width="match_parent"

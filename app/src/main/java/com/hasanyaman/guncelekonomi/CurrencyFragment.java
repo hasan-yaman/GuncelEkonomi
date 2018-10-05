@@ -397,7 +397,8 @@ public class CurrencyFragment extends Fragment {
                     double changeRate = object.getDouble("change_rate");
                     if (inCurrencyMode) {
                         String code = object.getString("code");
-                        currencies.add(new Currency(name, code, buying, selling, changeRate));
+                        long updateDate = object.getLong("update_date");
+                        currencies.add(new Currency(name, code, buying, selling, changeRate, updateDate));
                     } else {
                         currencies.add(new Currency(name, buying, selling, changeRate));
                     }
@@ -474,10 +475,10 @@ public class CurrencyFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(), CurrencyDetailActivity.class);
-                String selectedItemCode = currencies.get(i).getCode();
-                String selectedItemFullName = currencies.get(i).getName();
-                intent.putExtra(Constants.SELECTED_ITEM_CODE, selectedItemCode);
-                intent.putExtra(Constants.SELECTED_ITEM_FULL_NAME, selectedItemFullName);
+
+                Gson gson = new Gson();
+                intent.putExtra(Constants.SELECTED_ITEM, gson.toJson(currencies.get(i)));
+
                 startActivity(intent);
             }
         });

@@ -65,15 +65,28 @@ public class CurrencyDetailAdapter extends BaseAdapter {
 
         DecimalFormat decimalFormat = new DecimalFormat("#.####");
 
-
         holder.sellingTextView.setText(String.valueOf(decimalFormat.format(banks.get(position).getSelling())));
         holder.buyingTextView.setText(String.valueOf(decimalFormat.format(banks.get(position).getBuying())));
 
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(banks.get(position).getUpdateDate() * 1000);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        String updateTime = "";
+        if(hour < 10) {
+            updateTime = "0" + hour;
+        } else {
+            updateTime = String.valueOf(hour);
+        }
+
         int minute = calendar.get(Calendar.MINUTE);
-        String updateTime = hour + ":" + minute;
+
+        if(minute < 10) {
+            updateTime += ":0" + minute;
+        } else {
+            updateTime += ":" + minute;
+        }
+
+        //String updateTime = hour + ":" + minute;
 
         holder.updateDateTextView.setText(updateTime);
 

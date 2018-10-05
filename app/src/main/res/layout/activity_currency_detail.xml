@@ -19,9 +19,9 @@
             android:id="@+id/backImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
             android:src="@drawable/white_back"/>
 
         <TextView
@@ -50,12 +50,153 @@
 
     </RelativeLayout>
 
+    <TableRow
+        android:id="@+id/detailNames"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="50dp"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:text="Alış(₺)"
+                android:textColor="@color/black"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:text="Satış(₺)"
+                android:textColor="@color/black"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:text="Değişim"
+                android:textColor="@color/black"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="Son Güncelleme"
+                android:textColor="@color/black"
+                />
+        </RelativeLayout>
+
+    </TableRow>
+
+    <View
+        android:id="@+id/detailDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="95dp"
+        android:background="@color/red"
+        android:visibility="invisible"/>
+
+    <TableRow
+        android:id="@+id/detailRow"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="100dp"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/detailBuying"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:text="6,1205"
+                android:textColor="@color/black"
+                android:textSize="24sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/detailSelling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:text="6,1249"
+                android:textColor="@color/black"
+                android:textSize="24sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/detailChangeRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:text="% -0,63"
+                android:textColor="@color/red"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/detailUpdateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:text="16:57"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+    </TableRow>
+
 
     <TableRow
         android:id="@+id/headerRow"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="150dp"
         android:visibility="invisible">
 
         <RelativeLayout
@@ -126,7 +267,7 @@
         android:id="@+id/topDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="200dp"
         android:background="@color/red"
         android:visibility="invisible"/>
 
@@ -134,7 +275,7 @@
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="200dp"
         android:visibility="invisible">
     </ListView>
 
@@ -143,7 +284,7 @@
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 
 </RelativeLayout>
