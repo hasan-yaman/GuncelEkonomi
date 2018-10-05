@@ -28,6 +28,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/endeksRL"
             android:layout_weight="0.75">
 
             <TextView
@@ -43,6 +44,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/changeRateRL"
             android:layout_weight="1">
 
             <TextView

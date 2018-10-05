@@ -29,6 +29,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rowSellingRL"
             android:layout_weight="0.95">
 
             <TextView
@@ -44,6 +45,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rowVolumeRL"
             android:layout_weight="0.7">
 
             <TextView
@@ -59,6 +61,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rowChangeRateRL"
             android:layout_weight="1">
 
             <TextView

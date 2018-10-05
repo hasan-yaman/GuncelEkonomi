@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -24,7 +25,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hasanyaman.guncelekonomi.Adapters.CryptocurrencyAdapter;
 import com.hasanyaman.guncelekonomi.Data.Cryptocurrency;
-import com.hasanyaman.guncelekonomi.Data.Currency;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,9 +40,14 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Locale;
 
 
 /**
@@ -59,12 +64,17 @@ public class CryptocurrencyFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     ListView listView;
+    CryptocurrencyAdapter adapter;
     ProgressBar progressBar;
     ArrayList<Cryptocurrency> cryptocurrencies = new ArrayList<>();
 
     TableRow headerRow;
     View topDivider;
     TextView errorTextView;
+
+    RelativeLayout rowSellingRL;
+    RelativeLayout rowVolumeRL;
+    RelativeLayout rowChangeRateRL;
 
     boolean isOnline;
 
@@ -104,6 +114,10 @@ public class CryptocurrencyFragment extends Fragment {
         headerRow = inflatedView.findViewById(R.id.headerRow);
         topDivider = inflatedView.findViewById(R.id.topDivider);
         errorTextView = inflatedView.findViewById(R.id.errorMessage);
+
+        rowSellingRL = inflatedView.findViewById(R.id.rowSellingRL);
+        rowVolumeRL = inflatedView.findViewById(R.id.rowVolumeRL);
+        rowChangeRateRL = inflatedView.findViewById(R.id.rowChangeRateRL);
 
 
         sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
@@ -205,16 +219,7 @@ public class CryptocurrencyFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
@@ -223,7 +228,7 @@ public class CryptocurrencyFragment extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
 
-            Log.i("Info","doInBackground start");
+            Log.i("Info", "doInBackground start");
 
             String response;
 
@@ -251,19 +256,16 @@ public class CryptocurrencyFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("Info","onPostExecute start");
+            Log.i("Info", "onPostExecute start");
             super.onPostExecute(s);
             try {
-                Log.i("Info","before jsonArray");
                 JSONArray jsonArray = new JSONArray(s);
-                Log.i("Info", "start of for loop");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject object = jsonArray.getJSONObject(i);
                     cryptocurrencies.add(new Cryptocurrency(object.getString("full_name"), object.getString("symbol"), object.getString("selling_try"),
                             object.getDouble("change_rate"), object.getLong("volume"), object.getInt("rank")));
                 }
 
-                Log.i("Info","start of sorting");
 
                 Collections.sort(cryptocurrencies, new Comparator<Cryptocurrency>() {
                     @Override
@@ -272,11 +274,7 @@ public class CryptocurrencyFragment extends Fragment {
                     }
                 });
 
-                Log.i("Info","start updating UI");
-
                 updateUI();
-
-                Log.i("Info","start saving");
 
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -302,14 +300,18 @@ public class CryptocurrencyFragment extends Fragment {
     }
 
     private void updateUI() {
-        CryptocurrencyAdapter adapter = new CryptocurrencyAdapter(getActivity(), cryptocurrencies);
+        adapter = new CryptocurrencyAdapter(getActivity(), cryptocurrencies);
         listView.setAdapter(adapter);
 
         progressBar.setVisibility(View.GONE);
         listView.setVisibility(View.VISIBLE);
         headerRow.setVisibility(View.VISIBLE);
         topDivider.setVisibility(View.VISIBLE);
+
+        handleSort();
+
     }
+
 
     public boolean checkConnection() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -320,6 +322,100 @@ public class CryptocurrencyFragment extends Fragment {
     private void showAnErrorMessage() {
         progressBar.setVisibility(View.GONE);
         errorTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void handleSort() {
+        rowSellingRL.setOnClickListener(new View.OnClickListener() {
+
+            private boolean bigToSmall = true;
+
+            @Override
+            public void onClick(View view) {
+
+                Collections.sort(cryptocurrencies, new Comparator<Cryptocurrency>() {
+                    @Override
+                    public int compare(Cryptocurrency c1, Cryptocurrency c2) {
+
+                        double first = 0;
+                        double second = 0;
+
+                        try {
+                            // because (the French locale has , for decimal separator)
+                            NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
+                            Number firstNumber = format.parse(c1.getValue_try());
+                            first = firstNumber.doubleValue();
+
+                            Number secondNumber = format.parse(c2.getValue_try());
+                            second = secondNumber.doubleValue();
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (bigToSmall) {
+                            return Double.compare(second, first);
+                        } else {
+                            return Double.compare(first, second);
+
+                        }
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+                bigToSmall = !bigToSmall;
+            }
+        });
+        rowVolumeRL.setOnClickListener(new View.OnClickListener() {
+
+            private boolean bigToSmall = true;
+
+            @Override
+            public void onClick(View view) {
+                Collections.sort(cryptocurrencies, new Comparator<Cryptocurrency>() {
+                    @Override
+                    public int compare(Cryptocurrency c1, Cryptocurrency c2) {
+                        if (bigToSmall) {
+                            if (c2.getVolume() > c1.getVolume()) {
+                                return 1;
+                            } else if (c2.getVolume() < c1.getVolume()) {
+                                return -1;
+                            }
+                            return 0;
+                        } else {
+                            if (c1.getVolume() > c2.getVolume()) {
+                                return 1;
+                            } else if (c1.getVolume() < c2.getVolume()) {
+                                return -1;
+                            }
+                            return 0;
+                        }
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+                bigToSmall = !bigToSmall;
+            }
+        });
+        rowChangeRateRL.setOnClickListener(new View.OnClickListener() {
+            private boolean bigToSmall = true;
+
+            @Override
+            public void onClick(View view) {
+                Collections.sort(cryptocurrencies, new Comparator<Cryptocurrency>() {
+                    @Override
+                    public int compare(Cryptocurrency c1, Cryptocurrency c2) {
+                        if (bigToSmall) {
+                            return Double.compare(c2.getChangeRate(), c1.getChangeRate());
+                        } else {
+                            return Double.compare(c1.getChangeRate(), c2.getChangeRate());
+                        }
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+                bigToSmall = !bigToSmall;
+            }
+        });
     }
 
 

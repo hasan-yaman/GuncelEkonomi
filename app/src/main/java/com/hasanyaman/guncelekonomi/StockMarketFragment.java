@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -39,6 +40,8 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 /**
@@ -67,10 +70,12 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
 
     boolean isOnline;
 
-
     private OnFragmentInteractionListener mListener;
 
     private OnTaskCompleted listener;
+
+    RelativeLayout endeksRL;
+    RelativeLayout changeRateRL;
 
 
     public StockMarketFragment() {
@@ -108,6 +113,9 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         headerRow = inflatedView.findViewById(R.id.headerRow);
         topDivider = inflatedView.findViewById(R.id.topDivider);
         errorTextView = inflatedView.findViewById(R.id.errorMessage);
+
+        endeksRL = inflatedView.findViewById(R.id.endeksRL);
+        changeRateRL = inflatedView.findViewById(R.id.changeRateRL);
 
         sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
         isOnline = checkConnection();
@@ -197,6 +205,8 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         listView.setVisibility(View.VISIBLE);
         headerRow.setVisibility(View.VISIBLE);
         topDivider.setVisibility(View.VISIBLE);
+
+        handleSort();
     }
 
     private void showAnErrorMessage() {
@@ -311,5 +321,51 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    private void handleSort() {
+        endeksRL.setOnClickListener(new View.OnClickListener() {
+
+            private boolean bigToSmall = true;
+
+            @Override
+            public void onClick(View view) {
+                Collections.sort(stockMarkets, new Comparator<StockMarket>() {
+                    @Override
+                    public int compare(StockMarket s1, StockMarket s2) {
+                        if(bigToSmall) {
+                            return Double.compare(s2.getLatest(), s1.getLatest());
+                        }
+                        return Double.compare(s1.getLatest(), s2.getLatest());
+                    }
+                });
+
+                stockMarketAdapter.notifyDataSetChanged();
+                bigToSmall = !bigToSmall;
+
+            }
+        });
+
+
+        changeRateRL.setOnClickListener(new View.OnClickListener() {
+
+            private boolean bigToSmall = true;
+
+            @Override
+            public void onClick(View view) {
+                Collections.sort(stockMarkets, new Comparator<StockMarket>() {
+                    @Override
+                    public int compare(StockMarket s1, StockMarket s2) {
+                        if(bigToSmall) {
+                            return Double.compare(s2.getChangeRate(), s1.getChangeRate());
+                        }
+                        return Double.compare(s1.getChangeRate(), s2.getChangeRate());
+                    }
+                });
+
+                stockMarketAdapter.notifyDataSetChanged();
+                bigToSmall = !bigToSmall;
+            }
+        });
     }
 }

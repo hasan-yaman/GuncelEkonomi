@@ -234,6 +234,8 @@ public class CurrencyFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
+
+
                 Collections.sort(currencies, new Comparator<Currency>() {
                     @Override
                     public int compare(Currency c1, Currency c2) {
@@ -249,6 +251,7 @@ public class CurrencyFragment extends Fragment {
 
                 adapter.notifyDataSetChanged();
                 bigToSmall = !bigToSmall;
+
             }
         });
 
@@ -296,6 +299,7 @@ public class CurrencyFragment extends Fragment {
             }
         });
     }
+
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
