@@ -51,6 +51,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="70dp"
+                android:layout_marginEnd="70dp"
                 android:layout_marginTop="11dp"
                 android:src="@drawable/drow_down_arrow"
                 android:visibility="invisible"/>
@@ -68,6 +69,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Fark"
@@ -80,6 +82,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="40dp"
+                android:layout_marginEnd="40dp"
                 android:layout_marginTop="11dp"
                 android:src="@drawable/drow_down_arrow"
                 android:visibility="invisible"/>
