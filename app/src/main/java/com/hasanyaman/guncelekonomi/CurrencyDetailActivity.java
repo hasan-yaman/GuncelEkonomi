@@ -1,6 +1,10 @@
 package com.hasanyaman.guncelekonomi;
 
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,8 +15,10 @@ import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+
 import com.google.gson.Gson;
 import com.hasanyaman.guncelekonomi.Adapters.CurrencyDetailAdapter;
+import com.hasanyaman.guncelekonomi.Adapters.ViewPagerAdapter;
 import com.hasanyaman.guncelekonomi.Data.Bank;
 import com.hasanyaman.guncelekonomi.Data.Currency;
 import com.hasanyaman.guncelekonomi.Utilities.ArrayUtilities;
@@ -30,12 +36,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskCompleted {
+
+public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskCompleted, TabFragment.OnFragmentInteractionListener {
 
     private static final String[] BANKS_CODES = {"akbank", "finansbank", "isbankasi", "vakifbank", "yapikredi", "sekerbank", "denizbank", "hsbc"};
     boolean[] allDone = new boolean[BANKS_CODES.length];
 
     private Currency selectedCurrency;
+    private boolean inCurrencyMode;
 
     ArrayList<Bank> banks = new ArrayList<>();
 
@@ -48,8 +56,8 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
     private View detailDivider;
     private TableRow detailRow;
 
-    private OnTaskCompleted listener;
 
+    private OnTaskCompleted listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +65,13 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         setContentView(R.layout.activity_currency_detail);
 
         listener = this;
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            Gson gson = new Gson();
+            selectedCurrency = gson.fromJson(bundle.getString(Constants.SELECTED_ITEM), Currency.class);
+            inCurrencyMode = bundle.getBoolean(Constants.IN_CURRENCY_MODE, false);
+        }
 
         listView = findViewById(R.id.listView);
 
@@ -68,6 +83,13 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         detailDivider = findViewById(R.id.detailDivider);
         detailRow = findViewById(R.id.detailRow);
 
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), selectedCurrency.getCode(), inCurrencyMode);
+        viewPager.setAdapter(viewPagerAdapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(viewPager);
+
         ImageView backImageView = findViewById(R.id.backImageView);
         TextView currencyCodeTextView = findViewById(R.id.currencyCode);
         TextView currencyFullNameTextView = findViewById(R.id.currencyFullName);
@@ -77,15 +99,11 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         TextView detailChangeRate = findViewById(R.id.detailChangeRate);
         TextView detailUpdateTime = findViewById(R.id.detailUpdateTime);
 
-
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            Gson gson = new Gson();
-            selectedCurrency = gson.fromJson(bundle.getString(Constants.SELECTED_ITEM), Currency.class);
+        if (inCurrencyMode) {
+            getDataFromAPI();
+        } else {
+            showUI();
         }
-
-
-        getDataFromAPI();
 
         backImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,8 +112,15 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
             }
         });
 
-        currencyCodeTextView.setText(selectedCurrency.getCode());
-        currencyFullNameTextView.setText(selectedCurrency.getName());
+
+        if(inCurrencyMode) {
+            currencyCodeTextView.setText(selectedCurrency.getCode());
+            currencyFullNameTextView.setText(selectedCurrency.getName());
+        } else {
+            currencyCodeTextView.setText(selectedCurrency.getName());
+            currencyFullNameTextView.setText("");
+        }
+
 
         DecimalFormat decimalFormat = new DecimalFormat("#.####");
 
@@ -126,7 +151,9 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         }
 
         detailUpdateTime.setText(updateTime);
+
     }
+
 
     @Override
     public void onTaskCompleted() {
@@ -137,11 +164,8 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
             CurrencyDetailAdapter currencyDetailAdapter = new CurrencyDetailAdapter(this, banks);
             listView.setAdapter(currencyDetailAdapter);
 
-            detailNames.setVisibility(View.VISIBLE);
-            detailDivider.setVisibility(View.VISIBLE);
-            detailRow.setVisibility(View.VISIBLE);
+            showUI();
 
-            progressBar.setVisibility(View.GONE);
             if (banks.size() > 0) {
                 headerRow.setVisibility(View.VISIBLE);
                 topDivider.setVisibility(View.VISIBLE);
@@ -150,13 +174,20 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         }
     }
 
+    private void showUI() {
+        detailNames.setVisibility(View.VISIBLE);
+        detailDivider.setVisibility(View.VISIBLE);
+        detailRow.setVisibility(View.VISIBLE);
+
+        progressBar.setVisibility(View.GONE);
+    }
+
     private void getDataFromAPI() {
         for (int i = 0; i < BANKS_CODES.length; i++) {
             String url = "https://www.doviz.com/api/v1/currencies/" + selectedCurrency.getCode() + "/latest/" + BANKS_CODES[i];
             new DownloadTask(listener, i).execute(url);
         }
     }
-
 
     public class DownloadTask extends AsyncTask<String, Void, String> {
 
@@ -219,4 +250,9 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         }
     }
 
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }

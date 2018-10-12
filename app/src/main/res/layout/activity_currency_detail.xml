@@ -27,7 +27,7 @@
         <TextView
             android:id="@+id/currencyCode"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="70dp"
             android:layout_marginStart="70dp"
@@ -39,7 +39,7 @@
         <TextView
             android:id="@+id/currencyFullName"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="70dp"
@@ -68,6 +68,8 @@
                 android:layout_marginTop="15dp"
                 android:text="Alış(₺)"
                 android:textColor="@color/black"/>
+
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -192,11 +194,31 @@
     </TableRow>
 
 
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabSelectedTextColor="@color/colorPrimaryDark"
+        app:tabTextColor="@color/colorPrimary"
+        android:layout_marginTop="150dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    </android.support.design.widget.TabLayout>
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="200dp">
+    </android.support.v4.view.ViewPager>
+
+
     <TableRow
         android:id="@+id/headerRow"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="400dp"
         android:visibility="invisible">
 
         <RelativeLayout
@@ -267,7 +289,7 @@
         android:id="@+id/topDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="450dp"
         android:background="@color/red"
         android:visibility="invisible"/>
 
@@ -275,7 +297,7 @@
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="450dp"
         android:visibility="invisible">
     </ListView>
 

@@ -16,12 +16,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.google.firebase.functions.FirebaseFunctions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hasanyaman.guncelekonomi.Adapters.CurrencyAdapter;
@@ -62,24 +64,28 @@ public class CurrencyFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    ArrayList<Currency> currencies = new ArrayList<>();
-    ProgressBar progressBar;
+    private ArrayList<Currency> currencies = new ArrayList<>();
+    private ProgressBar progressBar;
 
-    ListView listView;
-    CurrencyAdapter adapter;
+    private ListView listView;
+    private CurrencyAdapter adapter;
 
-    TableRow headerRow;
-    TextView rowName;
-    View topDivider;
-    TextView errorTextView;
+    private TableRow headerRow;
+    private TextView rowName;
+    private View topDivider;
+    private TextView errorTextView;
 
-    RelativeLayout rowSellingValueRL;
-    RelativeLayout rowBuyingValueRL;
-    RelativeLayout changeRateRL;
+    private RelativeLayout rowSellingValueRL;
+    private RelativeLayout rowBuyingValueRL;
+    private RelativeLayout changeRateRL;
 
-    boolean isOnline;
+    private boolean inCurrencyMode;
 
-    SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
+
+    private ImageView sellingValueArrow;
+    private ImageView buyingValueArrow;
+    private ImageView changeRateArrow;
 
     public CurrencyFragment() {
         // Required empty public constructor
@@ -114,14 +120,13 @@ public class CurrencyFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+        inCurrencyMode = type.equals(Constants.CURRENCY);
+
         View inflatedView = inflater.inflate(R.layout.fragment_currency, container, false);
 
         listView = inflatedView.findViewById(R.id.listView);
 
-        // Döviz kurlarının detayını göster.
-        if (type.equals(Constants.CURRENCY)) {
-            setDetailsListener();
-        }
+        setDetailsListener();
 
         progressBar = inflatedView.findViewById(R.id.progress_bar);
         headerRow = inflatedView.findViewById(R.id.headerRow);
@@ -133,9 +138,12 @@ public class CurrencyFragment extends Fragment {
         rowBuyingValueRL = inflatedView.findViewById(R.id.rowBuyingValueRL);
         changeRateRL = inflatedView.findViewById(R.id.changeRateRL);
 
+        sellingValueArrow = inflatedView.findViewById(R.id.sellingValueArrow);
+        buyingValueArrow = inflatedView.findViewById(R.id.buyingValueArrow);
+        changeRateArrow = inflatedView.findViewById(R.id.changeRateArrow);
 
         sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
-        isOnline = checkConnection();
+        boolean isOnline = checkConnection();
 
         if (isOnline) {
             // Son kaydedilen dataların üzerinden 5 dakikadan fazla zaman geçmişse
@@ -144,10 +152,10 @@ public class CurrencyFragment extends Fragment {
             // Eğer eski datalar boşsa (yoksa) -> yeniden çek
 
             long lastUpdateTime = 0;
-            if (type.equals(Constants.GOLD)) {
-                lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_GOLD, 0);
-            } else {
+            if (inCurrencyMode) {
                 lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_CURRENCY, 0);
+            } else {
+                lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_GOLD, 0);
             }
 
             long currentTime = System.currentTimeMillis();
@@ -171,10 +179,10 @@ public class CurrencyFragment extends Fragment {
 
                 Gson gson = new Gson();
                 String response = "";
-                if (type.equals(Constants.GOLD)) {
-                    response = sharedPreferences.getString(Constants.GOLD_LIST, "");
-                } else {
+                if (inCurrencyMode) {
                     response = sharedPreferences.getString(Constants.CURRENCY_LIST, "");
+                } else {
+                    response = sharedPreferences.getString(Constants.GOLD_LIST, "");
                 }
 
                 if (response.equals("")) {
@@ -205,10 +213,10 @@ public class CurrencyFragment extends Fragment {
 
             Gson gson = new Gson();
             String response = "";
-            if (type.equals(Constants.GOLD)) {
-                response = sharedPreferences.getString(Constants.GOLD_LIST, "");
-            } else {
+            if (inCurrencyMode) {
                 response = sharedPreferences.getString(Constants.CURRENCY_LIST, "");
+            } else {
+                response = sharedPreferences.getString(Constants.GOLD_LIST, "");
             }
 
             if (response.equals("")) {
@@ -239,7 +247,7 @@ public class CurrencyFragment extends Fragment {
                 Collections.sort(currencies, new Comparator<Currency>() {
                     @Override
                     public int compare(Currency c1, Currency c2) {
-                        if(bigToSmall) {
+                        if (bigToSmall) {
                             // Büyükten kücüge sıralama
                             return Double.compare(c2.getSelling(), c1.getSelling());
                         } else {
@@ -250,6 +258,9 @@ public class CurrencyFragment extends Fragment {
                 });
 
                 adapter.notifyDataSetChanged();
+
+                showOnlySelectedArrow(sellingValueArrow, bigToSmall);
+
                 bigToSmall = !bigToSmall;
 
             }
@@ -264,7 +275,7 @@ public class CurrencyFragment extends Fragment {
                 Collections.sort(currencies, new Comparator<Currency>() {
                     @Override
                     public int compare(Currency c1, Currency c2) {
-                        if(bigToSmall) {
+                        if (bigToSmall) {
                             return Double.compare(c2.getBuying(), c1.getBuying());
                         } else {
                             return Double.compare(c1.getBuying(), c2.getBuying());
@@ -273,6 +284,9 @@ public class CurrencyFragment extends Fragment {
                 });
 
                 adapter.notifyDataSetChanged();
+
+                showOnlySelectedArrow(buyingValueArrow, bigToSmall);
+
                 bigToSmall = !bigToSmall;
             }
         });
@@ -286,7 +300,7 @@ public class CurrencyFragment extends Fragment {
                 Collections.sort(currencies, new Comparator<Currency>() {
                     @Override
                     public int compare(Currency c1, Currency c2) {
-                        if(bigToSmall) {
+                        if (bigToSmall) {
                             return Double.compare(c2.getChangeRate(), c1.getChangeRate());
                         } else {
                             return Double.compare(c1.getChangeRate(), c2.getChangeRate());
@@ -295,6 +309,9 @@ public class CurrencyFragment extends Fragment {
                 });
 
                 adapter.notifyDataSetChanged();
+
+                showOnlySelectedArrow(changeRateArrow, bigToSmall);
+
                 bigToSmall = !bigToSmall;
             }
         });
@@ -341,11 +358,6 @@ public class CurrencyFragment extends Fragment {
 
     public class DownloadTask extends AsyncTask<String, Void, String> {
 
-        private boolean inCurrencyMode;
-
-        public DownloadTask(boolean inCurrencyMode) {
-            this.inCurrencyMode = inCurrencyMode;
-        }
 
         @Override
         protected void onPreExecute() {
@@ -395,13 +407,15 @@ public class CurrencyFragment extends Fragment {
                     double selling = object.getDouble("selling");
                     double buying = object.getDouble("buying");
                     double changeRate = object.getDouble("change_rate");
+                    long updateDate = object.getLong("update_date");
+                    String code;
                     if (inCurrencyMode) {
-                        String code = object.getString("code");
-                        long updateDate = object.getLong("update_date");
-                        currencies.add(new Currency(name, code, buying, selling, changeRate, updateDate));
+                        code = object.getString("code");
                     } else {
-                        currencies.add(new Currency(name, buying, selling, changeRate));
+                        code = object.getString("name");
                     }
+
+                    currencies.add(new Currency(name, code, buying, selling, changeRate, updateDate));
                 }
 
                 updateUI();
@@ -415,12 +429,12 @@ public class CurrencyFragment extends Fragment {
                 Gson gson = new Gson();
                 String jsonArrayList = gson.toJson(currencies);
 
-                if (type.equals(Constants.GOLD)) {
-                    editor.putLong(Constants.LAST_UPDATE_TIME_GOLD, System.currentTimeMillis());
-                    editor.putString(Constants.GOLD_LIST, jsonArrayList);
-                } else {
+                if (inCurrencyMode) {
                     editor.putLong(Constants.LAST_UPDATE_TIME_CURRENCY, System.currentTimeMillis());
                     editor.putString(Constants.CURRENCY_LIST, jsonArrayList);
+                } else {
+                    editor.putLong(Constants.LAST_UPDATE_TIME_GOLD, System.currentTimeMillis());
+                    editor.putString(Constants.GOLD_LIST, jsonArrayList);
                 }
 
                 editor.apply();
@@ -437,10 +451,10 @@ public class CurrencyFragment extends Fragment {
         listView.setAdapter(adapter);
         //adapter.notifyDataSetChanged();
 
-        if (type.equals(Constants.GOLD)) {
-            rowName.setText("Altın");
-        } else {
+        if (inCurrencyMode) {
             rowName.setText("Döviz Kuru");
+        } else {
+            rowName.setText("Altın");
         }
 
         progressBar.setVisibility(View.GONE);
@@ -452,14 +466,31 @@ public class CurrencyFragment extends Fragment {
 
     }
 
+    private void hideArrows() {
+        sellingValueArrow.setVisibility(View.INVISIBLE);
+        buyingValueArrow.setVisibility(View.INVISIBLE);
+        changeRateArrow.setVisibility(View.INVISIBLE);
+    }
+
+    private void showOnlySelectedArrow(ImageView arrow, boolean bigToSmall) {
+        hideArrows();
+
+        if(bigToSmall) {
+            arrow.setImageResource(R.drawable.drow_down_arrow);
+        } else {
+            arrow.setImageResource(R.drawable.drop_up_arrow);
+        }
+        arrow.setVisibility(View.VISIBLE);
+    }
+
     private void getDataFromAPI() {
-        CurrencyFragment.DownloadTask downloadTask = new CurrencyFragment.DownloadTask(type.equals(Constants.CURRENCY));
+        CurrencyFragment.DownloadTask downloadTask = new CurrencyFragment.DownloadTask();
         String url = "";
 
-        if (type.equals(Constants.GOLD)) {
-            url = "https://www.doviz.com/api/v1/golds/all/latest";
-        } else {
+        if (inCurrencyMode) {
             url = "https://www.doviz.com/api/v1/currencies/all/latest";
+        } else {
+            url = "https://www.doviz.com/api/v1/golds/all/latest";
         }
 
         downloadTask.execute(url);
@@ -478,6 +509,7 @@ public class CurrencyFragment extends Fragment {
 
                 Gson gson = new Gson();
                 intent.putExtra(Constants.SELECTED_ITEM, gson.toJson(currencies.get(i)));
+                intent.putExtra(Constants.IN_CURRENCY_MODE, inCurrencyMode);
 
                 startActivity(intent);
             }

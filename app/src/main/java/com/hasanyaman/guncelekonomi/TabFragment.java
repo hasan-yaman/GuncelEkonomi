@@ -10,11 +10,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.hasanyaman.guncelekonomi.Data.GraphData;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,51 +40,37 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link TabFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link TabFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class TabFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_CODE = "arg-code";
+    private static final String ARG_GRAPH_NAME = "arg-graph-name";
+    private static final String ARG_IN_CURRENCY_MODE = "arg-in-currency-mode";
+
+    private String code;
+    private String graphName;
+    private boolean inCurrencyMode;
 
     private OnFragmentInteractionListener mListener;
 
-    ArrayList<Date> dates = new ArrayList<>();
-    ArrayList<Double> sellingValues = new ArrayList<>();
+    private LineChart lineChart;
 
-    GraphView graphView;
+    ArrayList<GraphData> graphDatas = new ArrayList<>();
+
 
     public TabFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TabFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TabFragment newInstance(String param1, String param2) {
+
+    public static TabFragment newInstance(String code, String graphName, boolean inCurrencyMode) {
         TabFragment fragment = new TabFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_CODE, code);
+        args.putString(ARG_GRAPH_NAME, graphName);
+        args.putBoolean(ARG_IN_CURRENCY_MODE, inCurrencyMode);
         fragment.setArguments(args);
         return fragment;
     }
@@ -79,8 +79,9 @@ public class TabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            code = getArguments().getString(ARG_CODE);
+            graphName = getArguments().getString(ARG_GRAPH_NAME);
+            inCurrencyMode = getArguments().getBoolean(ARG_IN_CURRENCY_MODE);
         }
     }
 
@@ -89,14 +90,42 @@ public class TabFragment extends Fragment {
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_tab, container, false);
 
-        String url = "https://doviz.com/api/v1/currencies/USD/daily";
-        new DownloadTask().execute(url);
+        lineChart = inflatedView.findViewById(R.id.chart);
+        preConfigureLineChart();
 
-        graphView = inflatedView.findViewById(R.id.graph);
+        getDataFromApi();
+
         return inflatedView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private void preConfigureLineChart() {
+        lineChart.setTouchEnabled(false);
+        lineChart.setDescription(null);
+
+        Legend legend = lineChart.getLegend();
+        legend.setEnabled(false);
+
+        XAxis xAxis = lineChart.getXAxis();
+
+        AxisValueFormatter formatter = new AxisValueFormatter(this.graphName);
+        xAxis.setValueFormatter(formatter);
+
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(false);
+
+
+        //xAxis.setLabelCount(6,true);
+
+        // hide right y axis
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setDrawAxisLine(false);
+    }
+
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -120,108 +149,151 @@ public class TabFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-    public class DownloadTask extends AsyncTask<String, Void, String> {
+    private void getDataFromApi() {
+        new DownloadGraphData().execute(getURL());
+    }
+
+
+    /*
+
+
+
+
+     */
+
+    private String getURL() {
+        switch (graphName) {
+            case Constants.DAILY_GRAPH:
+                if (inCurrencyMode) {
+                    return Constants.DETAIL_URL + this.code + "/daily";
+                }
+                return Constants.GOLD_DETAIL_URL + this.code + "/daily";
+            case Constants.WEEKLY_GRAPH:
+                return calculateDateForUrl(-7);
+            case Constants.MONTHLY_GRAPH:
+                return calculateDateForUrl(-30);
+            case Constants.YEARLY_GRAPH:
+                return calculateDateForUrl(-365);
+            default:
+                if (inCurrencyMode) {
+                    return Constants.DETAIL_URL + this.code + "/daily";
+                }
+                return  Constants.GOLD_DETAIL_URL + this.code + "/daily";
+        }
+    }
+
+
+    private String calculateDateForUrl(int backInTimeInDays) {
+        Calendar calendar = Calendar.getInstance();
+
+        int startYear = calendar.get(Calendar.YEAR);
+        int startMonth = calendar.get(Calendar.MONTH) + 1;
+        int startDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        if (backInTimeInDays == -7) {
+            calendar.add(Calendar.DAY_OF_YEAR, backInTimeInDays);
+        } else if (backInTimeInDays == -30) {
+            calendar.add(Calendar.MONTH, -1);
+        } else if (backInTimeInDays == -365) {
+            calendar.add(Calendar.YEAR, -1);
+        }
+        int finishYear = calendar.get(Calendar.YEAR);
+        int finishMonth = calendar.get(Calendar.MONTH) + 1;
+        int finishDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        String url;
+
+        if (inCurrencyMode) {
+            url = Constants.DETAIL_URL;
+        } else {
+            url = Constants.GOLD_DETAIL_URL;
+        }
+
+        url += this.code + "/archive?start=" + finishYear + "-" + finishMonth + "-" +
+                finishDay + "&end=" + startYear + "-" + startMonth + "-" + startDay;
+
+        Log.i("Info", "graph url -> " + url);
+        return url;
+    }
+
+    public class DownloadGraphData extends AsyncTask<String, Void, String> {
+
+
         @Override
         protected String doInBackground(String... strings) {
-            Log.i("Info","start doInBackground");
-            URL url;
-            HttpURLConnection connection;
+            String response;
+
             try {
-                url = new URL(strings[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = connection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(inputStream);
-                int data = reader.read();
-                String result = "";
-                while (data != -1) {
-                    char current = (char) data;
-                    result += current;
-                    data = reader.read();
-                }
-                Log.i("Info","end doInBackground");
-                return result;
+
+                HttpClient httpclient = new DefaultHttpClient();
+
+                HttpPost httppost = new HttpPost(strings[0]);
+
+                HttpResponse httpResponse = httpclient.execute(httppost);
+
+                HttpEntity httpEntity = httpResponse.getEntity();
+
+                response = EntityUtils.toString(httpEntity);
+
+                return response;
+
             } catch (Exception e) {
-                Log.i("Info", "Hata!DownloadTask!doInBackground" + e.toString());
+
+                Log.e("Error ", e.toString());
             }
 
-            return "";
+
+            return null;
         }
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("Info","start onPostExecute");
             super.onPostExecute(s);
             try {
-                JSONArray jsonArray = new JSONArray(s);
-
-                Calendar calendar = new GregorianCalendar();
-                Log.i("Info","start first forLoop");
-                for (int i = 0; i < 100; i++) {
-                    JSONObject object = jsonArray.getJSONObject(i);
-                    double selling = object.getDouble("selling");
+                JSONArray array = new JSONArray(s);
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject object = array.getJSONObject(i);
+                    float selling = (float) object.getDouble("selling");
                     long updateTime = object.getLong("update_date");
-
-                    calendar.setTimeInMillis(updateTime * 1000);
-                    Date date = calendar.getTime();
-                    dates.add(date);
-
-                    sellingValues.add(selling);
-
-                    /*Calendar calendar = new GregorianCalendar();
-                    calendar.setTimeInMillis(updateTime * 1000);
-                    Date date = calendar.getTime();
-                    //int hour = calendar.get(Calendar.HOUR);
-                    //int minute = calendar.get(Calendar.MINUTE);
-                    int hour = date.getHours();
-                    int minute = date.getMinutes();
-
-                    Log.i("Info", "updateTime->" + updateTime +" hour->" + hour + " minute->" + minute); */
+                    graphDatas.add(new GraphData(selling, updateTime));
+                    //Log.i("Info","selling -> " + selling + " updateTime -> " + updateTime);
                 }
-                Log.i("Info", "end first forLoop");
-                DataPoint[] dataPoints = new DataPoint[100];
-                for (int i = 0; i < 100; i++) {
-                    dataPoints[i] = new DataPoint(dates.get(i), sellingValues.get(i));
+
+                List<Entry> entries = new ArrayList<>();
+
+                for (GraphData data : graphDatas) {
+                    entries.add(new Entry(data.getUpdateDate(), data.getSelling()));
                 }
-                Log.i("Info","end second forLoop");
 
-                LineGraphSeries<DataPoint> series = new LineGraphSeries<>(dataPoints);
-                graphView.addSeries(series);
+                LineDataSet dataSet = new LineDataSet(entries, "Label");
 
-                // set date label formatter
-                graphView.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-                graphView.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
+                dataSet.setDrawCircles(false);
+                dataSet.setDrawValues(false);
+                dataSet.setColors(new int[]{R.color.colorPrimary}, getContext());
 
-                // set manual x bounds to have nice steps
-                graphView.getViewport().setMinX(dates.get(0).getTime());
-                graphView.getViewport().setMaxX(dates.get(99).getTime());
-                graphView.getViewport().setXAxisBoundsManual(true);
+                LineData lineData = new LineData(dataSet);
 
-                // as we use dates as labels, the human rounding to nice readable numbers
-                // is not necessary
-                graphView.getGridLabelRenderer().setHumanRounding(false);
+                /*XAxis xAxis = lineChart.getXAxis();
+                long min = graphDatas.get(0).getUpdateDate();
+                long max = graphDatas.get(graphDatas.size() - 1).getUpdateDate();
 
-                Log.i("Info","end settings of graph");
+                xAxis.setAxisMinimum(min);
+                xAxis.setAxisMaximum(max);*/
 
+                lineChart.setData(lineData);
+                lineChart.invalidate();
+
+                Log.i("Info", "draw chart");
 
             } catch (Exception e) {
-                Log.i("Info", "Hata!PostExecute!" + e.toString());
-
+                e.printStackTrace();
             }
         }
     }
+
 }

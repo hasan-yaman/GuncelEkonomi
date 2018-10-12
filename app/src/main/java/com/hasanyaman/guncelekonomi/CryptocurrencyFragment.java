@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -63,22 +64,26 @@ public class CryptocurrencyFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    ListView listView;
-    CryptocurrencyAdapter adapter;
-    ProgressBar progressBar;
-    ArrayList<Cryptocurrency> cryptocurrencies = new ArrayList<>();
+    private ListView listView;
+    private CryptocurrencyAdapter adapter;
+    private ProgressBar progressBar;
+    private ArrayList<Cryptocurrency> cryptocurrencies = new ArrayList<>();
 
-    TableRow headerRow;
-    View topDivider;
-    TextView errorTextView;
+    private TableRow headerRow;
+    private View topDivider;
+    private TextView errorTextView;
 
-    RelativeLayout rowSellingRL;
-    RelativeLayout rowVolumeRL;
-    RelativeLayout rowChangeRateRL;
+    private RelativeLayout rowSellingRL;
+    private RelativeLayout rowVolumeRL;
+    private RelativeLayout rowChangeRateRL;
 
-    boolean isOnline;
+    private boolean isOnline;
 
-    SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
+
+    private ImageView valueArrow;
+    private ImageView volumeArrow;
+    private ImageView changeRateArrow;
 
     public CryptocurrencyFragment() {
         // Required empty public constructor
@@ -118,6 +123,10 @@ public class CryptocurrencyFragment extends Fragment {
         rowSellingRL = inflatedView.findViewById(R.id.rowSellingRL);
         rowVolumeRL = inflatedView.findViewById(R.id.rowVolumeRL);
         rowChangeRateRL = inflatedView.findViewById(R.id.rowChangeRateRL);
+
+        valueArrow = inflatedView.findViewById(R.id.valueArrow);
+        volumeArrow = inflatedView.findViewById(R.id.volumeArrow);
+        changeRateArrow = inflatedView.findViewById(R.id.changeRateArrow);
 
 
         sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
@@ -362,6 +371,9 @@ public class CryptocurrencyFragment extends Fragment {
                 });
 
                 adapter.notifyDataSetChanged();
+
+                showOnlySelectedArrow(valueArrow, bigToSmall);
+
                 bigToSmall = !bigToSmall;
             }
         });
@@ -393,6 +405,9 @@ public class CryptocurrencyFragment extends Fragment {
                 });
 
                 adapter.notifyDataSetChanged();
+
+                showOnlySelectedArrow(volumeArrow, bigToSmall);
+
                 bigToSmall = !bigToSmall;
             }
         });
@@ -413,10 +428,30 @@ public class CryptocurrencyFragment extends Fragment {
                 });
 
                 adapter.notifyDataSetChanged();
+
+                showOnlySelectedArrow(changeRateArrow, bigToSmall);
+
                 bigToSmall = !bigToSmall;
             }
         });
     }
 
+
+    private void hideArrows() {
+        valueArrow.setVisibility(View.INVISIBLE);
+        volumeArrow.setVisibility(View.INVISIBLE);
+        changeRateArrow.setVisibility(View.INVISIBLE);
+    }
+
+    private void showOnlySelectedArrow(ImageView arrow, boolean bigToSmall) {
+        hideArrows();
+
+        if(bigToSmall) {
+            arrow.setImageResource(R.drawable.drow_down_arrow);
+        } else {
+            arrow.setImageResource(R.drawable.drop_up_arrow);
+        }
+        arrow.setVisibility(View.VISIBLE);
+    }
 
 }

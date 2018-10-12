@@ -36,11 +36,24 @@
                 android:id="@+id/rowValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="3dp"
+                android:layout_marginStart="3dp"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Satış(₺)"
                 android:textColor="@color/black"/>
+
+            <ImageView
+                android:id="@+id/valueArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="11dp"
+                android:src="@drawable/drow_down_arrow"
+                android:visibility="invisible"/>
 
         </RelativeLayout>
 
@@ -52,11 +65,24 @@
                 android:id="@+id/volumeValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="40dp"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Hacim"
                 android:textColor="@color/black"/>
+
+            <ImageView
+                android:id="@+id/volumeArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="45dp"
+                android:layout_marginTop="11dp"
+                android:src="@drawable/drow_down_arrow"
+                android:visibility="invisible"/>
 
         </RelativeLayout>
 
@@ -66,13 +92,25 @@
 
             <TextView
                 android:id="@+id/changeRate"
-                android:layout_width="60dp"
-                android:layout_height="30dp"
-                android:textColor="@color/black"
-                android:gravity="center"
-                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_marginTop="10dp"
-                android:text="Fark"/>
+                android:gravity="center"
+                android:text="Fark"
+                android:textColor="@color/black"/>
+
+            <ImageView
+                android:id="@+id/changeRateArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="11dp"
+                android:src="@drawable/drow_down_arrow"
+                android:visibility="invisible"/>
 
 
         </RelativeLayout>

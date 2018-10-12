@@ -6,9 +6,6 @@
                 tools:context="com.hasanyaman.guncelekonomi.CurrencyFragment">
 
 
-
-
-
     <TableRow
         android:id="@+id/headerRow"
         android:layout_width="match_parent"
@@ -22,12 +19,12 @@
                 android:id="@+id/rowName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/black"
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:text="Döviz Kuru"
+                android:textColor="@color/black"
+                android:textStyle="bold"
                 />
 
         </RelativeLayout>
@@ -40,11 +37,24 @@
                 android:id="@+id/rowSellingValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:gravity="center"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="10dp"
-                android:text="Satış(₺)"/>
+                android:gravity="center"
+                android:text="Satış(₺)"
+                android:textColor="@color/black"/>
+
+            <ImageView
+                android:id="@+id/sellingValueArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="11dp"
+                android:src="@drawable/drow_down_arrow"
+                android:visibility="invisible"/>
 
         </RelativeLayout>
 
@@ -56,11 +66,26 @@
                 android:id="@+id/rowBuyingValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:gravity="center"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="10dp"
-                android:text="Alış(₺)"/>
+                android:gravity="center"
+                android:text="Alış(₺)"
+                android:textColor="@color/black"/>
+
+            <ImageView
+                android:id="@+id/buyingValueArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="11dp"
+                android:src="@drawable/drow_down_arrow"
+                android:visibility="invisible"/>
 
         </RelativeLayout>
 
@@ -70,13 +95,38 @@
 
             <TextView
                 android:id="@+id/changeRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Fark"
+                android:textColor="@color/black"/>
+
+            <!--<TextView
+                android:id="@+id/changeRate"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
-                android:textColor="@color/black"
-                android:gravity="center"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:text="Fark"/>
+                android:gravity="center"
+                android:text="Fark"
+                android:textColor="@color/black"/> -->
+
+            <ImageView
+                android:id="@+id/changeRateArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="11dp"
+                android:src="@drawable/drow_down_arrow"
+                android:visibility="invisible"/>
 
 
         </RelativeLayout>
