@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -55,28 +56,30 @@ import java.util.Comparator;
 public class StockMarketFragment extends Fragment implements OnTaskCompleted {
 
     private static final String[] STOCK_MARKETS = {"XU100", "XU050", "XU030"};
-    boolean[] allDone = {false, false, false};
+    private boolean[] allDone = {false, false, false};
 
-    ArrayList<StockMarket> stockMarkets = new ArrayList<>();
-    StockMarketAdapter stockMarketAdapter;
+    private ArrayList<StockMarket> stockMarkets = new ArrayList<>();
+    private StockMarketAdapter stockMarketAdapter;
 
-    ListView listView;
-    ProgressBar progressBar;
+    private ListView listView;
+    private ProgressBar progressBar;
 
-    TableRow headerRow;
-    View topDivider;
-    TextView errorTextView;
-    SharedPreferences sharedPreferences;
+    private TableRow headerRow;
+    private View topDivider;
+    private TextView errorTextView;
+    private SharedPreferences sharedPreferences;
 
-    boolean isOnline;
+    private boolean isOnline;
 
     private OnFragmentInteractionListener mListener;
 
     private OnTaskCompleted listener;
 
-    RelativeLayout endeksRL;
-    RelativeLayout changeRateRL;
+    private RelativeLayout endeksRL;
+    private RelativeLayout changeRateRL;
 
+    private ImageView endeksArrow;
+    private ImageView changeRateArrow;
 
     public StockMarketFragment() {
         // Required empty public constructor
@@ -116,6 +119,9 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
 
         endeksRL = inflatedView.findViewById(R.id.endeksRL);
         changeRateRL = inflatedView.findViewById(R.id.changeRateRL);
+
+        endeksArrow = inflatedView.findViewById(R.id.endeksArrow);
+        changeRateArrow = inflatedView.findViewById(R.id.changeRateArrow);
 
         sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
         isOnline = checkConnection();
@@ -341,6 +347,7 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
                 });
 
                 stockMarketAdapter.notifyDataSetChanged();
+                showOnlySelectedArrow(endeksArrow, bigToSmall);
                 bigToSmall = !bigToSmall;
 
             }
@@ -364,8 +371,26 @@ public class StockMarketFragment extends Fragment implements OnTaskCompleted {
                 });
 
                 stockMarketAdapter.notifyDataSetChanged();
+                showOnlySelectedArrow(changeRateArrow, bigToSmall);
                 bigToSmall = !bigToSmall;
             }
         });
+    }
+
+
+    private void hideArrows() {
+        endeksArrow.setVisibility(View.INVISIBLE);
+        changeRateArrow.setVisibility(View.INVISIBLE);
+    }
+
+    private void showOnlySelectedArrow(ImageView arrow, boolean bigToSmall) {
+        hideArrows();
+
+        if(bigToSmall) {
+            arrow.setImageResource(R.drawable.drow_down_arrow);
+        } else {
+            arrow.setImageResource(R.drawable.drop_up_arrow);
+        }
+        arrow.setVisibility(View.VISIBLE);
     }
 }

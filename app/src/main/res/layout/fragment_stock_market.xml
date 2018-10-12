@@ -35,11 +35,25 @@
                 android:id="@+id/rowValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:gravity="center"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
-                android:text="Endeks"/>
+                android:gravity="center"
+                android:text="Endeks"
+                android:textColor="@color/black"/>
+
+            <ImageView
+                android:id="@+id/endeksArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="70dp"
+                android:layout_marginTop="11dp"
+                android:src="@drawable/drow_down_arrow"
+                android:visibility="invisible"/>
 
         </RelativeLayout>
 
@@ -49,13 +63,26 @@
 
             <TextView
                 android:id="@+id/changeRate"
-                android:layout_width="60dp"
-                android:layout_height="30dp"
-                android:textColor="@color/black"
-                android:gravity="center"
-                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="10dp"
-                android:text="Fark"/>
+                android:gravity="center"
+                android:text="Fark"
+                android:textColor="@color/black"/>
+
+            <ImageView
+                android:id="@+id/changeRateArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="40dp"
+                android:layout_marginTop="11dp"
+                android:src="@drawable/drow_down_arrow"
+                android:visibility="invisible"/>
 
 
         </RelativeLayout>

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -57,6 +58,8 @@ public class TabFragment extends Fragment {
 
     private LineChart lineChart;
 
+    private ProgressBar progressBar;
+
     ArrayList<GraphData> graphDatas = new ArrayList<>();
 
 
@@ -91,6 +94,8 @@ public class TabFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_tab, container, false);
 
         lineChart = inflatedView.findViewById(R.id.chart);
+        progressBar = inflatedView.findViewById(R.id.progressBar);
+
         preConfigureLineChart();
 
         getDataFromApi();
@@ -158,13 +163,6 @@ public class TabFragment extends Fragment {
         new DownloadGraphData().execute(getURL());
     }
 
-
-    /*
-
-
-
-
-     */
 
     private String getURL() {
         switch (graphName) {
@@ -287,6 +285,9 @@ public class TabFragment extends Fragment {
 
                 lineChart.setData(lineData);
                 lineChart.invalidate();
+
+                lineChart.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
 
                 Log.i("Info", "draw chart");
 

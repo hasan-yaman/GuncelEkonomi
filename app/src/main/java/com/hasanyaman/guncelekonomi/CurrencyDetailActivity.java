@@ -56,8 +56,9 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
     private View detailDivider;
     private TableRow detailRow;
 
-
     private OnTaskCompleted listener;
+
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +88,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), selectedCurrency.getCode(), inCurrencyMode);
         viewPager.setAdapter(viewPagerAdapter);
 
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        tabLayout = findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
 
         ImageView backImageView = findViewById(R.id.backImageView);
@@ -178,6 +179,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         detailNames.setVisibility(View.VISIBLE);
         detailDivider.setVisibility(View.VISIBLE);
         detailRow.setVisibility(View.VISIBLE);
+        tabLayout.setVisibility(View.VISIBLE);
 
         progressBar.setVisibility(View.GONE);
     }

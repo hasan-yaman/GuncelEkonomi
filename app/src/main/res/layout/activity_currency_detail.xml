@@ -196,6 +196,7 @@
 
 
     <android.support.design.widget.TabLayout
+        android:visibility="invisible"
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -302,6 +303,7 @@
     </ListView>
 
     <ProgressBar
+        android:visibility="invisible"
         android:id="@+id/progress_bar"
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
