@@ -131,7 +131,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="100dp"
-        android:visibility="invisible">
+        android:visibility="visible">
 
         <RelativeLayout
             android:layout_weight="1">
@@ -142,9 +142,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
-                android:text="6,1205"
+                android:text="9999,9999"
                 android:textColor="@color/black"
-                android:textSize="24sp"/>
+                android:textSize="16sp"/>
         </RelativeLayout>
 
         <RelativeLayout

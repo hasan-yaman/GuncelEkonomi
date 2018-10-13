@@ -79,8 +79,6 @@ public class CurrencyFragment extends Fragment {
     private RelativeLayout rowBuyingValueRL;
     private RelativeLayout changeRateRL;
 
-    private boolean inCurrencyMode;
-
     private SharedPreferences sharedPreferences;
 
     private ImageView sellingValueArrow;
@@ -119,9 +117,6 @@ public class CurrencyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        inCurrencyMode = type.equals(Constants.CURRENCY);
-
         View inflatedView = inflater.inflate(R.layout.fragment_currency, container, false);
 
         listView = inflatedView.findViewById(R.id.listView);
@@ -152,10 +147,17 @@ public class CurrencyFragment extends Fragment {
             // Eğer eski datalar boşsa (yoksa) -> yeniden çek
 
             long lastUpdateTime = 0;
-            if (inCurrencyMode) {
-                lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_CURRENCY, 0);
-            } else {
-                lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_GOLD, 0);
+
+            switch (type) {
+                case Constants.CURRENCY:
+                    lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_CURRENCY, 0);
+                    break;
+                case Constants.GOLD:
+                    lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_GOLD, 0);
+                    break;
+                case Constants.PARITY:
+                    lastUpdateTime = sharedPreferences.getLong(Constants.LAST_UPDATE_TIME_PARITY, 0);
+                    break;
             }
 
             long currentTime = System.currentTimeMillis();
@@ -179,11 +181,19 @@ public class CurrencyFragment extends Fragment {
 
                 Gson gson = new Gson();
                 String response = "";
-                if (inCurrencyMode) {
-                    response = sharedPreferences.getString(Constants.CURRENCY_LIST, "");
-                } else {
-                    response = sharedPreferences.getString(Constants.GOLD_LIST, "");
+
+                switch (type) {
+                    case Constants.CURRENCY:
+                        response = sharedPreferences.getString(Constants.CURRENCY_LIST, "");
+                        break;
+                    case Constants.GOLD:
+                        response = sharedPreferences.getString(Constants.GOLD_LIST, "");
+                        break;
+                    case Constants.PARITY:
+                        response = sharedPreferences.getString(Constants.PARITY_LIST, "");
+                        break;
                 }
+
 
                 if (response.equals("")) {
                     Log.i("Info", "new data");
@@ -213,11 +223,19 @@ public class CurrencyFragment extends Fragment {
 
             Gson gson = new Gson();
             String response = "";
-            if (inCurrencyMode) {
-                response = sharedPreferences.getString(Constants.CURRENCY_LIST, "");
-            } else {
-                response = sharedPreferences.getString(Constants.GOLD_LIST, "");
+
+            switch (type) {
+                case Constants.CURRENCY:
+                    response = sharedPreferences.getString(Constants.CURRENCY_LIST, "");
+                    break;
+                case Constants.GOLD:
+                    response = sharedPreferences.getString(Constants.GOLD_LIST, "");
+                    break;
+                case Constants.PARITY:
+                    response = sharedPreferences.getString(Constants.PARITY_LIST, "");
+                    break;
             }
+
 
             if (response.equals("")) {
                 Log.i("Info", "new data");
@@ -409,10 +427,20 @@ public class CurrencyFragment extends Fragment {
                     double changeRate = object.getDouble("change_rate");
                     long updateDate = object.getLong("update_date");
                     String code;
-                    if (inCurrencyMode) {
-                        code = object.getString("code");
-                    } else {
-                        code = object.getString("name");
+
+                    switch (type) {
+                        case Constants.CURRENCY:
+                            code = object.getString("code");
+                            break;
+                        case Constants.GOLD:
+                            code = object.getString("name");
+                            break;
+                        case Constants.PARITY:
+                            code = object.getString("code");
+                            break;
+                        default:
+                            code = "";
+                            break;
                     }
 
                     currencies.add(new Currency(name, code, buying, selling, changeRate, updateDate));
@@ -429,13 +457,21 @@ public class CurrencyFragment extends Fragment {
                 Gson gson = new Gson();
                 String jsonArrayList = gson.toJson(currencies);
 
-                if (inCurrencyMode) {
-                    editor.putLong(Constants.LAST_UPDATE_TIME_CURRENCY, System.currentTimeMillis());
-                    editor.putString(Constants.CURRENCY_LIST, jsonArrayList);
-                } else {
-                    editor.putLong(Constants.LAST_UPDATE_TIME_GOLD, System.currentTimeMillis());
-                    editor.putString(Constants.GOLD_LIST, jsonArrayList);
+                switch (type) {
+                    case Constants.CURRENCY:
+                        editor.putLong(Constants.LAST_UPDATE_TIME_CURRENCY, System.currentTimeMillis());
+                        editor.putString(Constants.CURRENCY_LIST, jsonArrayList);
+                        break;
+                    case Constants.GOLD:
+                        editor.putLong(Constants.LAST_UPDATE_TIME_GOLD, System.currentTimeMillis());
+                        editor.putString(Constants.GOLD_LIST, jsonArrayList);
+                        break;
+                    case Constants.PARITY:
+                        editor.putLong(Constants.LAST_UPDATE_TIME_PARITY, System.currentTimeMillis());
+                        editor.putString(Constants.PARITY_LIST, jsonArrayList);
+                        break;
                 }
+
 
                 editor.apply();
 
@@ -451,11 +487,18 @@ public class CurrencyFragment extends Fragment {
         listView.setAdapter(adapter);
         //adapter.notifyDataSetChanged();
 
-        if (inCurrencyMode) {
-            rowName.setText("Döviz Kuru");
-        } else {
-            rowName.setText("Altın");
+        switch (type) {
+            case Constants.CURRENCY:
+                rowName.setText("Döviz Kuru");
+                break;
+            case Constants.GOLD:
+                rowName.setText("Altın");
+                break;
+            case Constants.PARITY:
+                rowName.setText("Parite");
+                break;
         }
+
 
         progressBar.setVisibility(View.GONE);
         listView.setVisibility(View.VISIBLE);
@@ -475,7 +518,7 @@ public class CurrencyFragment extends Fragment {
     private void showOnlySelectedArrow(ImageView arrow, boolean bigToSmall) {
         hideArrows();
 
-        if(bigToSmall) {
+        if (bigToSmall) {
             arrow.setImageResource(R.drawable.drow_down_arrow);
         } else {
             arrow.setImageResource(R.drawable.drop_up_arrow);
@@ -487,11 +530,18 @@ public class CurrencyFragment extends Fragment {
         CurrencyFragment.DownloadTask downloadTask = new CurrencyFragment.DownloadTask();
         String url = "";
 
-        if (inCurrencyMode) {
-            url = "https://www.doviz.com/api/v1/currencies/all/latest";
-        } else {
-            url = "https://www.doviz.com/api/v1/golds/all/latest";
+        switch (type) {
+            case Constants.CURRENCY:
+                url = "https://www.doviz.com/api/v1/currencies/all/latest";
+                break;
+            case Constants.GOLD:
+                url = "https://www.doviz.com/api/v1/golds/all/latest";
+                break;
+            case Constants.PARITY:
+                url = "https://www.doviz.com/api/v1/parities/all/latest";
+                break;
         }
+
 
         downloadTask.execute(url);
     }
@@ -509,7 +559,7 @@ public class CurrencyFragment extends Fragment {
 
                 Gson gson = new Gson();
                 intent.putExtra(Constants.SELECTED_ITEM, gson.toJson(currencies.get(i)));
-                intent.putExtra(Constants.IN_CURRENCY_MODE, inCurrencyMode);
+                intent.putExtra(Constants.TYPE, type);
 
                 startActivity(intent);
             }

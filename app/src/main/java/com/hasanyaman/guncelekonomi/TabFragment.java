@@ -48,11 +48,11 @@ public class TabFragment extends Fragment {
 
     private static final String ARG_CODE = "arg-code";
     private static final String ARG_GRAPH_NAME = "arg-graph-name";
-    private static final String ARG_IN_CURRENCY_MODE = "arg-in-currency-mode";
+    private static final String ARG_TYPE = "arg-type";
 
     private String code;
     private String graphName;
-    private boolean inCurrencyMode;
+    private String type;
 
     private OnFragmentInteractionListener mListener;
 
@@ -68,12 +68,12 @@ public class TabFragment extends Fragment {
     }
 
 
-    public static TabFragment newInstance(String code, String graphName, boolean inCurrencyMode) {
+    public static TabFragment newInstance(String code, String graphName, String type) {
         TabFragment fragment = new TabFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CODE, code);
         args.putString(ARG_GRAPH_NAME, graphName);
-        args.putBoolean(ARG_IN_CURRENCY_MODE, inCurrencyMode);
+        args.putString(ARG_TYPE, type);
         fragment.setArguments(args);
         return fragment;
     }
@@ -84,7 +84,7 @@ public class TabFragment extends Fragment {
         if (getArguments() != null) {
             code = getArguments().getString(ARG_CODE);
             graphName = getArguments().getString(ARG_GRAPH_NAME);
-            inCurrencyMode = getArguments().getBoolean(ARG_IN_CURRENCY_MODE);
+            type = getArguments().getString(ARG_TYPE);
         }
     }
 
@@ -167,10 +167,17 @@ public class TabFragment extends Fragment {
     private String getURL() {
         switch (graphName) {
             case Constants.DAILY_GRAPH:
-                if (inCurrencyMode) {
-                    return Constants.DETAIL_URL + this.code + "/daily";
+                switch (type) {
+                    case Constants.CURRENCY:
+                        return Constants.CURRENCY_DETAIL_URL + this.code + "/daily";
+                    case Constants.GOLD:
+                        return Constants.GOLD_DETAIL_URL + this.code + "/daily";
+                    case Constants.PARITY:
+                        return Constants.PARITY_DETAIL_URL + this.code + "/daily";
+                    default:
+                        return Constants.CURRENCY_DETAIL_URL + this.code + "/daily";
                 }
-                return Constants.GOLD_DETAIL_URL + this.code + "/daily";
+
             case Constants.WEEKLY_GRAPH:
                 return calculateDateForUrl(-7);
             case Constants.MONTHLY_GRAPH:
@@ -178,10 +185,16 @@ public class TabFragment extends Fragment {
             case Constants.YEARLY_GRAPH:
                 return calculateDateForUrl(-365);
             default:
-                if (inCurrencyMode) {
-                    return Constants.DETAIL_URL + this.code + "/daily";
+                switch (type) {
+                    case Constants.CURRENCY:
+                        return Constants.CURRENCY_DETAIL_URL + this.code + "/daily";
+                    case Constants.GOLD:
+                        return  Constants.GOLD_DETAIL_URL + this.code + "/daily";
+                    case Constants.PARITY:
+                        return Constants.PARITY_DETAIL_URL + this.code + "/daily";
+                    default:
+                        return Constants.CURRENCY_DETAIL_URL + this.code + "/daily";
                 }
-                return  Constants.GOLD_DETAIL_URL + this.code + "/daily";
         }
     }
 
@@ -204,13 +217,20 @@ public class TabFragment extends Fragment {
         int finishMonth = calendar.get(Calendar.MONTH) + 1;
         int finishDay = calendar.get(Calendar.DAY_OF_MONTH);
 
-        String url;
+        String url = "";
 
-        if (inCurrencyMode) {
-            url = Constants.DETAIL_URL;
-        } else {
-            url = Constants.GOLD_DETAIL_URL;
+        switch (type) {
+            case Constants.CURRENCY:
+                url = Constants.CURRENCY_DETAIL_URL;
+                break;
+            case Constants.GOLD:
+                url = Constants.GOLD_DETAIL_URL;
+                break;
+            case Constants.PARITY:
+                url = Constants.PARITY_DETAIL_URL;
+                break;
         }
+
 
         url += this.code + "/archive?start=" + finishYear + "-" + finishMonth + "-" +
                 finishDay + "&end=" + startYear + "-" + startMonth + "-" + startDay;

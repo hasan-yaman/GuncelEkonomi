@@ -20,6 +20,11 @@
             android:icon="@drawable/doviz"
             android:title="Kripto Paralar"/>
 
+        <item
+            android:id="@+id/nav_parity"
+            android:icon="@drawable/doviz"
+            android:title="Pariteler" />
+
     </group>
 
 

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="name_text_size">72sp</dimen>
-    <dimen name="name_text_size_small">52sp</dimen>
-    <dimen name="value_text_size">76sp</dimen>
-    <dimen name="change_rate_text_size">42sp</dimen>
+
 </resources>

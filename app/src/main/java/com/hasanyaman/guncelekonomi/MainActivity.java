@@ -112,6 +112,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_cryptocurrency) {
             fragment = new CryptocurrencyFragment();
             getSupportActionBar().setTitle("Kripto Paralar");
+        } else if(id == R.id.nav_parity) {
+            fragment = CurrencyFragment.newInstance(Constants.PARITY);
+            getSupportActionBar().setTitle("Pariteler");
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -125,9 +128,11 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
     @Override
     public void onFragmentInteraction(Uri uri) {
     }
+
 
     @Override
     protected void onStop() {

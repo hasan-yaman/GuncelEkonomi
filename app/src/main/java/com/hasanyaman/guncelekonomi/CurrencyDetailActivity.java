@@ -43,7 +43,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
     boolean[] allDone = new boolean[BANKS_CODES.length];
 
     private Currency selectedCurrency;
-    private boolean inCurrencyMode;
+    private String type;
 
     ArrayList<Bank> banks = new ArrayList<>();
 
@@ -71,7 +71,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         if (bundle != null) {
             Gson gson = new Gson();
             selectedCurrency = gson.fromJson(bundle.getString(Constants.SELECTED_ITEM), Currency.class);
-            inCurrencyMode = bundle.getBoolean(Constants.IN_CURRENCY_MODE, false);
+            type = bundle.getString(Constants.TYPE, "");
         }
 
         listView = findViewById(R.id.listView);
@@ -85,7 +85,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         detailRow = findViewById(R.id.detailRow);
 
         ViewPager viewPager = findViewById(R.id.viewPager);
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), selectedCurrency.getCode(), inCurrencyMode);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), selectedCurrency.getCode(), type);
         viewPager.setAdapter(viewPagerAdapter);
 
         tabLayout = findViewById(R.id.tabLayout);
@@ -100,11 +100,18 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         TextView detailChangeRate = findViewById(R.id.detailChangeRate);
         TextView detailUpdateTime = findViewById(R.id.detailUpdateTime);
 
-        if (inCurrencyMode) {
-            getDataFromAPI();
-        } else {
-            showUI();
+        switch (type) {
+            case Constants.CURRENCY:
+                getDataFromAPI();
+                break;
+            case Constants.GOLD:
+                showUI();
+                break;
+            case Constants.PARITY:
+                showUI();
+                break;
         }
+
 
         backImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,17 +120,28 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
             }
         });
 
-
-        if(inCurrencyMode) {
-            currencyCodeTextView.setText(selectedCurrency.getCode());
-            currencyFullNameTextView.setText(selectedCurrency.getName());
-        } else {
-            currencyCodeTextView.setText(selectedCurrency.getName());
-            currencyFullNameTextView.setText("");
+        switch (type) {
+            case Constants.CURRENCY:
+                currencyCodeTextView.setText(selectedCurrency.getCode());
+                currencyFullNameTextView.setText(selectedCurrency.getName());
+                break;
+            case Constants.GOLD:
+                currencyCodeTextView.setText(selectedCurrency.getName());
+                currencyFullNameTextView.setText("");
+                break;
+            case Constants.PARITY:
+                currencyCodeTextView.setText(selectedCurrency.getCode());
+                currencyFullNameTextView.setText(selectedCurrency.getName());
+                break;
         }
 
 
         DecimalFormat decimalFormat = new DecimalFormat("#.####");
+
+        String buying = decimalFormat.format(selectedCurrency.getBuying());
+        String selling = decimalFormat.format(selectedCurrency.getSelling());
+
+        int maxLength = Math.max(buying.length(), selling.length());
 
         detailBuying.setText(decimalFormat.format(selectedCurrency.getBuying()));
         detailSelling.setText(decimalFormat.format(selectedCurrency.getSelling()));

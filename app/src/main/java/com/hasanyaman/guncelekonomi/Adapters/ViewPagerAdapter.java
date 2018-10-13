@@ -11,16 +11,16 @@ import com.hasanyaman.guncelekonomi.TabFragment;
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private String code;
-    private boolean inCurrenyMode;
+    private String type;
 
     public ViewPagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
     }
 
-    public ViewPagerAdapter(FragmentManager fragmentManager, String code, boolean inCurrenyMode) {
+    public ViewPagerAdapter(FragmentManager fragmentManager, String code, String type) {
         super(fragmentManager);
         this.code = code;
-        this.inCurrenyMode = inCurrenyMode;
+        this.type = type;
     }
 
 
@@ -28,15 +28,15 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return TabFragment.newInstance(this.code, Constants.DAILY_GRAPH, this.inCurrenyMode);
+                return TabFragment.newInstance(this.code, Constants.DAILY_GRAPH, this.type);
             case 1:
-                return TabFragment.newInstance(this.code, Constants.WEEKLY_GRAPH, this.inCurrenyMode);
+                return TabFragment.newInstance(this.code, Constants.WEEKLY_GRAPH, this.type);
             case 2:
-                return TabFragment.newInstance(this.code, Constants.MONTHLY_GRAPH, this.inCurrenyMode);
+                return TabFragment.newInstance(this.code, Constants.MONTHLY_GRAPH, this.type);
             case 3:
-                return TabFragment.newInstance(this.code, Constants.YEARLY_GRAPH, this.inCurrenyMode);
+                return TabFragment.newInstance(this.code, Constants.YEARLY_GRAPH, this.type);
             default:
-                return TabFragment.newInstance(this.code, Constants.DAILY_GRAPH, this.inCurrenyMode);
+                return TabFragment.newInstance(this.code, Constants.DAILY_GRAPH, this.type);
         }
 
     }

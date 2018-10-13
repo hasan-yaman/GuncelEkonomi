@@ -77,8 +77,6 @@ public class CryptocurrencyFragment extends Fragment {
     private RelativeLayout rowVolumeRL;
     private RelativeLayout rowChangeRateRL;
 
-    private boolean isOnline;
-
     private SharedPreferences sharedPreferences;
 
     private ImageView valueArrow;
@@ -130,7 +128,7 @@ public class CryptocurrencyFragment extends Fragment {
 
 
         sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
-        isOnline = checkConnection();
+        boolean isOnline = checkConnection();
 
         if (isOnline) {
             // Son kaydedilen dataların üzerinden 5 dakikadan fazla zaman geçmişse
