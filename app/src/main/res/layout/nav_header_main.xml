@@ -3,11 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="96dp"
+    android:background="@color/colorPrimary"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="8dp"
+    android:gravity="bottom"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="6dp"
+        android:gravity="center"
+        android:text="Güncel Ekonomi"
+        android:textColor="@color/white"
+        android:textSize="26sp"/>
 
 </RelativeLayout>
