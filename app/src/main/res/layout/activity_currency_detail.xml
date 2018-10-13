@@ -142,9 +142,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
-                android:text="9999,9999"
+                android:text="9,9999"
                 android:textColor="@color/black"
-                android:textSize="16sp"/>
+                android:textSize="24sp"/>
         </RelativeLayout>
 
         <RelativeLayout

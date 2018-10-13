@@ -142,9 +142,28 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         String selling = decimalFormat.format(selectedCurrency.getSelling());
 
         int maxLength = Math.max(buying.length(), selling.length());
+        float textSize = 24f;
 
-        detailBuying.setText(decimalFormat.format(selectedCurrency.getBuying()));
-        detailSelling.setText(decimalFormat.format(selectedCurrency.getSelling()));
+        if(maxLength <= 6 ) {
+            textSize = 24f;
+        } else if(maxLength <= 7) {
+            textSize = 22f;
+        } else if(maxLength <= 8) {
+            textSize = 18f;
+        } else if(maxLength <= 9) {
+            textSize = 16f;
+        } else if(maxLength <= 10){
+            textSize = 14f;
+        } else {
+            textSize = 12f;
+        }
+
+        detailBuying.setText(buying);
+        detailSelling.setText(selling);
+
+        detailBuying.setTextSize(textSize);
+        detailSelling.setTextSize(textSize);
+
 
         decimalFormat = new DecimalFormat("#.##");
         String changeRate = "% " + decimalFormat.format(selectedCurrency.getChangeRate());

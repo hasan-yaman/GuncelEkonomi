@@ -17,12 +17,12 @@
 
         <item
             android:id="@+id/nav_cryptocurrency"
-            android:icon="@drawable/doviz"
+            android:icon="@drawable/cryptocurrency_icon"
             android:title="Kripto Paralar"/>
 
         <item
             android:id="@+id/nav_parity"
-            android:icon="@drawable/doviz"
+            android:icon="@drawable/parity_icon"
             android:title="Pariteler" />
 
     </group>
