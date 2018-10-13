@@ -15,7 +15,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
             android:text="Request Network"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="12sp"
             android:textStyle="bold"/>
 
@@ -33,7 +33,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="39.790,47 ₺"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="12sp"/>
 
     </RelativeLayout>
@@ -50,7 +50,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="4.637.482.914"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="12sp"/>
 
 

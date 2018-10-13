@@ -63,10 +63,14 @@ public class CurrencyDetailAdapter extends BaseAdapter {
 
         holder.nameTextView.setText(banks.get(position).getFullName());
 
-        DecimalFormat decimalFormat = new DecimalFormat("#.####");
+        DecimalFormat decimalFormatV = new DecimalFormat();
+        decimalFormatV.setMinimumFractionDigits(4);
+        decimalFormatV.setMaximumFractionDigits(4);
+        decimalFormatV.setMinimumIntegerDigits(1);
 
-        holder.sellingTextView.setText(String.valueOf(decimalFormat.format(banks.get(position).getSelling())));
-        holder.buyingTextView.setText(String.valueOf(decimalFormat.format(banks.get(position).getBuying())));
+
+        holder.sellingTextView.setText(String.valueOf(decimalFormatV.format(banks.get(position).getSelling())));
+        holder.buyingTextView.setText(String.valueOf(decimalFormatV.format(banks.get(position).getBuying())));
 
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(banks.get(position).getUpdateDate() * 1000);

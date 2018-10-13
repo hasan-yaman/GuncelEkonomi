@@ -1,11 +1,11 @@
 <resources>
 
-    <!-- Base application theme. -->
+
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/black</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -13,12 +13,14 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="KaranlikTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">#dfdfdf</item>
-        <item name="colorPrimaryDark">#ababab</item>
-        <item name="colorAccent">#ececec</item>
+    <style name="AppDarkTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/darkThemeColorPrimary</item>
+        <item name="colorPrimaryDark">@color/darkThemeColorPrimaryDark</item>
+        <item name="colorAccent">@color/darkThemeColorAccent</item>
+        <item name="android:textColorPrimary">@color/white</item>
     </style>
-    <style name="KaranlikTheme.NoActionBar">
+
+    <style name="AppDarkTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -28,8 +30,8 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="KaranlikTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppDarkTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="KaranlikTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppDarkTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 </resources>

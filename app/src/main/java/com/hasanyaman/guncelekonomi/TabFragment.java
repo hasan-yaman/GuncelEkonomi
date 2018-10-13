@@ -1,6 +1,8 @@
 package com.hasanyaman.guncelekonomi;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -62,6 +64,7 @@ public class TabFragment extends Fragment {
 
     ArrayList<GraphData> graphDatas = new ArrayList<>();
 
+    private SharedPreferences sharedPreferences;
 
     public TabFragment() {
         // Required empty public constructor
@@ -96,6 +99,8 @@ public class TabFragment extends Fragment {
         lineChart = inflatedView.findViewById(R.id.chart);
         progressBar = inflatedView.findViewById(R.id.progressBar);
 
+        sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
+
         preConfigureLineChart();
 
         getDataFromApi();
@@ -128,6 +133,15 @@ public class TabFragment extends Fragment {
 
         YAxis leftAxis = lineChart.getAxisLeft();
         leftAxis.setDrawAxisLine(false);
+
+        String themeMode = sharedPreferences.getString(Constants.THEME, Constants.DAY_MODE);
+        if(themeMode.equals(Constants.NIGHT_MODE)) {
+            xAxis.setTextColor(Color.WHITE);
+            leftAxis.setTextColor(Color.WHITE);
+        } else {
+            xAxis.setTextColor(Color.BLACK);
+            leftAxis.setTextColor(Color.BLACK);
+        }
     }
 
 

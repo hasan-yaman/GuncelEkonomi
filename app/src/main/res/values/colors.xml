@@ -2,11 +2,14 @@
 <resources>
     <color name="colorPrimary">#d32f2f</color>
     <color name="colorPrimaryDark">#c72c2c</color>
-   <!-- <color name="colorAccent">#ffffff</color> -->
     <color name="colorAccent">#d32f2f</color>
     <color name="red">#CB2C1B</color>
     <color name="green">#209351</color>
     <color name="yellow">#F1C30B</color>
     <color name="white">#FFF</color>
     <color name="black">#000</color>
+    <color name="darkThemeColorPrimary">#818181</color>
+    <color name="darkThemeColorPrimaryDark">#818181</color>
+    <color name="darkThemeColorAccent">#ececec</color>
+    <color name="colorBackground">#e33131</color>
 </resources>

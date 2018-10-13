@@ -18,7 +18,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
@@ -42,7 +42,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Endeks"
-                android:textColor="@color/black"/>
+                android:textColor="?android:attr/textColorPrimary"/>
 
             <ImageView
                 android:id="@+id/endeksArrow"
@@ -73,7 +73,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Fark"
-                android:textColor="@color/black"/>
+                android:textColor="?android:attr/textColorPrimary"/>
 
             <ImageView
                 android:id="@+id/changeRateArrow"

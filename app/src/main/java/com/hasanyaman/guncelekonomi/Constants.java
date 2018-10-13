@@ -34,12 +34,7 @@ public class Constants {
 
     public final static String[] MONTH_ABBR = {"Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"};
 
-    /*
-    https://www.doviz.com/api/v1/parities/all/latest
-
-    https://www.doviz.com/api/v1/parities/eur-usd/daily
-
-    https://www.doviz.com/api/v1/parities/eur-usd/latest
-    https://doviz.com/api/v1/parities/eur-usd/archive?start=2018-10-01&end=2018-10-12
-    */
+    public final static String THEME = "theme";
+    public final static String DAY_MODE = "day-mode";
+    public final static String NIGHT_MODE = "night-mode";
 }

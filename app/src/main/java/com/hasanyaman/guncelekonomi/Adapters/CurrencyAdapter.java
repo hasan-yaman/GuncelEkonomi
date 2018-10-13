@@ -12,6 +12,7 @@ import com.hasanyaman.guncelekonomi.Data.Currency;
 import com.hasanyaman.guncelekonomi.R;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 
 public class CurrencyAdapter extends BaseAdapter {
@@ -59,11 +60,20 @@ public class CurrencyAdapter extends BaseAdapter {
 
         holder.nameTextView.setText(currencies.get(position).getName());
 
-        DecimalFormat decimalFormatV = new DecimalFormat("#.####");
+
+        DecimalFormat decimalFormatV = new DecimalFormat();
+        decimalFormatV.setMinimumFractionDigits(4);
+        decimalFormatV.setMaximumFractionDigits(4);
+        decimalFormatV.setMinimumIntegerDigits(1);
+
         holder.sellingValueTextView.setText(decimalFormatV.format(currencies.get(position).getSelling()));
         holder.buyingValueTextView.setText(decimalFormatV.format(currencies.get(position).getBuying()));
 
-        DecimalFormat decimalFormatCR = new DecimalFormat("#.##");
+        DecimalFormat decimalFormatCR = new DecimalFormat();
+        decimalFormatCR.setMinimumFractionDigits(2);
+        decimalFormatCR.setMaximumFractionDigits(2);
+        decimalFormatCR.setMinimumIntegerDigits(1);
+
         String changeRate = "% " + decimalFormatCR.format(currencies.get(position).getChangeRate());
         holder.changeRateTextView.setText(changeRate);
 

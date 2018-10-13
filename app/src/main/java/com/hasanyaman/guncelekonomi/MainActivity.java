@@ -1,5 +1,7 @@
 package com.hasanyaman.guncelekonomi;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +11,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,10 +22,19 @@ public class MainActivity extends AppCompatActivity
         SettingsFragment.OnFragmentInteractionListener, CurrencyFragment.OnFragmentInteractionListener,
         CryptocurrencyFragment.OnFragmentInteractionListener {
 
+    NavigationView navigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        String themeMode = sharedPreferences.getString(Constants.THEME, Constants.DAY_MODE);
+        if (themeMode.equals(Constants.NIGHT_MODE)) {
+            setTheme(R.style.AppDarkTheme);
+        }
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -33,10 +45,8 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         // Uygulama açıldığında döviz menüsünü göster!
 
@@ -112,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_cryptocurrency) {
             fragment = new CryptocurrencyFragment();
             getSupportActionBar().setTitle("Kripto Paralar");
-        } else if(id == R.id.nav_parity) {
+        } else if (id == R.id.nav_parity) {
             fragment = CurrencyFragment.newInstance(Constants.PARITY);
             getSupportActionBar().setTitle("Pariteler");
         }
@@ -128,7 +138,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public void onFragmentInteraction(Uri uri) {
     }
@@ -140,6 +149,11 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void recreate() {
+        super.recreate();
+        navigationView.setCheckedItem(R.id.nav_doviz);
+    }
 }
 
 

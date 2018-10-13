@@ -59,9 +59,18 @@ public class StockMarketAdapter extends BaseAdapter {
 
         holder.nameTextView.setText(stockMarkets.get(position).getFullName());
 
-        holder.latestTextView.setText(String.valueOf(stockMarkets.get(position).getLatest()));
+        DecimalFormat decimalFormatV = new DecimalFormat();
+        decimalFormatV.setMinimumFractionDigits(4);
+        decimalFormatV.setMaximumFractionDigits(4);
+        decimalFormatV.setMinimumIntegerDigits(1);
 
-        DecimalFormat decimalFormatCR = new DecimalFormat("#.##");
+        holder.latestTextView.setText(decimalFormatV.format(stockMarkets.get(position).getLatest()));
+
+        DecimalFormat decimalFormatCR = new DecimalFormat();
+        decimalFormatCR.setMinimumFractionDigits(2);
+        decimalFormatCR.setMaximumFractionDigits(2);
+        decimalFormatCR.setMinimumIntegerDigits(1);
+
         String changeRate = "% " + decimalFormatCR.format(stockMarkets.get(position).getChangeRate());
         holder.changeRate.setText(changeRate);
 

@@ -1,5 +1,7 @@
 package com.hasanyaman.guncelekonomi;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -63,6 +65,13 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        String themeMode = sharedPreferences.getString(Constants.THEME, Constants.DAY_MODE);
+        if(themeMode.equals(Constants.NIGHT_MODE)) {
+            setTheme(R.style.AppDarkTheme);
+        }
+
         setContentView(R.layout.activity_currency_detail);
 
         listener = this;
@@ -136,10 +145,14 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         }
 
 
-        DecimalFormat decimalFormat = new DecimalFormat("#.####");
+        DecimalFormat decimalFormatV = new DecimalFormat();
+        decimalFormatV.setMinimumFractionDigits(4);
+        decimalFormatV.setMaximumFractionDigits(4);
+        decimalFormatV.setMinimumIntegerDigits(1);
 
-        String buying = decimalFormat.format(selectedCurrency.getBuying());
-        String selling = decimalFormat.format(selectedCurrency.getSelling());
+
+        String buying = decimalFormatV.format(selectedCurrency.getBuying());
+        String selling = decimalFormatV.format(selectedCurrency.getSelling());
 
         int maxLength = Math.max(buying.length(), selling.length());
         float textSize = 24f;
@@ -165,8 +178,11 @@ public class CurrencyDetailActivity extends AppCompatActivity implements OnTaskC
         detailSelling.setTextSize(textSize);
 
 
-        decimalFormat = new DecimalFormat("#.##");
-        String changeRate = "% " + decimalFormat.format(selectedCurrency.getChangeRate());
+        DecimalFormat decimalFormatCR = new DecimalFormat();
+        decimalFormatCR.setMinimumFractionDigits(2);
+        decimalFormatCR.setMaximumFractionDigits(2);
+        decimalFormatCR.setMinimumIntegerDigits(1);
+        String changeRate = "% " + decimalFormatCR.format(selectedCurrency.getChangeRate());
 
         detailChangeRate.setText(changeRate);
 

@@ -12,45 +12,46 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textColor="@color/black"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:text="Çeyrek Altın"
+            android:text="Cumhuriyet Altını"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
             />
 
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_weight="1">
+        android:layout_weight="0.9">
 
         <TextView
             android:id="@+id/sellingValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:gravity="center"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
-            android:text="373.8"/>
+            android:gravity="center"
+            android:text="9999,9999"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp"/>
 
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_weight="1">
+        android:layout_weight="0.9">
 
         <TextView
             android:id="@+id/buyingValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:gravity="center"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
-            android:text="373.8"/>
+            android:gravity="center"
+            android:text="373.8"
+            android:textColor="?android:attr/textColorPrimary"/>
 
     </RelativeLayout>
 

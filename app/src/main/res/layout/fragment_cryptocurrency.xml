@@ -22,7 +22,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:text="Kripto Para"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textStyle="bold"
                 />
 
@@ -43,7 +43,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Satış(₺)"
-                android:textColor="@color/black"/>
+                android:textColor="?android:attr/textColorPrimary"/>
 
             <ImageView
                 android:id="@+id/valueArrow"
@@ -72,7 +72,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Hacim"
-                android:textColor="@color/black"/>
+                android:textColor="?android:attr/textColorPrimary"/>
 
             <ImageView
                 android:id="@+id/volumeArrow"
@@ -101,7 +101,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Fark"
-                android:textColor="@color/black"/>
+                android:textColor="?android:attr/textColorPrimary"/>
 
             <ImageView
                 android:id="@+id/changeRateArrow"

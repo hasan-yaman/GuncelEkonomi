@@ -59,10 +59,9 @@ public class CryptocurrencyAdapter extends BaseAdapter {
 
         holder.fullNameTextView.setText(cryptocurrencies.get(position).getFullName());
 
-        String value = cryptocurrencies.get(position).getValue_try() + " ₺";
-        holder.valueTextView.setText(value);
+        holder.valueTextView.setText(cryptocurrencies.get(position).getValue_try());
 
-        DecimalFormat decimalFormatV = new DecimalFormat("###,###,###,###");
+        DecimalFormat decimalFormatV = new DecimalFormat();
         String volume = decimalFormatV.format(Double.parseDouble(Long.toString(cryptocurrencies.get(position).getVolume())));
         holder.volumeTextView.setText(volume);
 
